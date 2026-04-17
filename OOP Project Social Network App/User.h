@@ -1,13 +1,9 @@
 #pragma once
+#include "UniqueElement.h"
 
 class Page;
 
-class User {
-	static char** existingIds;
-	static int IdCnt;
-	static int IdCap;
-
-	const char* id;
+class User : public UniqueElement {
 	const char* name;
 	User** friendList; // storing pointers to users to save memory
 	int friends;
@@ -15,12 +11,6 @@ class User {
 	int lP;
 
 public:
-	// static funcs
-	static void resize();
-	static const char* AddId(const char* newId);
-	static bool doesIdExist(const char* id);
-	static void freeIds(); // to manage deletion
-
 	// constructors
 	User();
 	User(const char* id, const char* name, int friends, int lP);
