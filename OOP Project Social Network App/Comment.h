@@ -4,18 +4,18 @@
 #include <iostream>
 using namespace std;
 
-class User;
+class Author;
 
 class Comment : public UniqueElement {
 	char* text;
-	User* userMain;
+	Author* userMain;
 
 public:
 	//default
 	Comment();
 
 	//parameterized
-	Comment(const char* txt, User* user);
+	Comment(const char* txt, Author* user);
 
 	//deconstructor
 	~Comment();

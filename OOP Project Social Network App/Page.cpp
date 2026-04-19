@@ -1,16 +1,21 @@
 #include "Page.h"
+#include "Author.h"
 #include "stringFunctions.h"
 #include <stdexcept>
 
-Page::Page() : UniqueElement(), owner(nullptr), sharedPosts(nullptr), likes(0) {}
+Page::Page() : Author(nullptr), owner(nullptr), sharedPosts(nullptr), likes(0) {}
 
-Page::Page(const char* id, User* o, int likes) : UniqueElement(id), owner(o), likes(likes), sharedPosts(nullptr) {}
+Page::Page(const char* id, const char* title, User* o, int likes) : Author(id), title(title), owner(o), likes(likes), sharedPosts(nullptr) {}
 
 Page::~Page() {
 	delete[] sharedPosts;
+	delete title;
+	sharedPosts = nullptr;
+	owner = nullptr;
 	// not deleting id because its not owned by Page (managed by UniqueElement static array).
 	// not deleting owner because we're just storing a pointer, not creating it
 }
-// boingg
-// boing boing
-// dsfs
+
+const char* Page::getName() const {
+	return title;
+}

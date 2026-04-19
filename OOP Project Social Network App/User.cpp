@@ -1,11 +1,14 @@
 #include "User.h"
+#include "Post.h"
 #include "stringFunctions.h"
 #include <stdexcept>
+#include <iostream>
+using namespace std;
 
-User::User() : UniqueElement(), name(nullptr), friendList(nullptr), likedPages(nullptr), friends(0), lP(0) {}
+User::User() : Author(), name(nullptr), friendList(nullptr), likedPages(nullptr), friends(0), lP(0), timeline(nullptr) {}
 
 User::User(const char* id, const char* name, int friends, int lP) 
-	: UniqueElement(id), name(nullptr), friendList(nullptr), likedPages(nullptr) {
+	: Author(id), name(nullptr), friendList(nullptr), likedPages(nullptr) {
 	
 	if (name) {
 		int len = getLength(name);
@@ -20,7 +23,7 @@ User::User(const char* id, const char* name, int friends, int lP)
 };
 
 // copy constructor
-User::User(const User& other) : UniqueElement() {
+User::User(const User& other) : Author() {
 	// shallow copying pointer since id doesn't get destroyed when user is destroyed.
 	id = other.id;
 
@@ -68,4 +71,22 @@ User::~User() {
 	delete[] friendList; // no memory leak because they just store pointers, not heap objects
 	delete[] likedPages;
 	// not deleting id because its not owned by User (managed by UniqueElement static array).
+}
+
+const char* User::getName() const {
+	return this->name;
+}
+
+void User::viewFriendList() const {
+	for (int i = 0; i < friends; i++) {
+		cout << friendList[i]->getName() << '\n';
+	}
+}
+
+void User::viewTimeLine(const Date& currDate) const {
+	for (int i = 0; i < posts; i++) {
+		if (timeline[i]->isPostRecent(currDate)) {
+			timeline[i]->displayPost();
+		}
+	}
 }

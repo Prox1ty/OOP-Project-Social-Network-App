@@ -5,7 +5,6 @@ protected:
 	static char** existingIds;
 	static int IdCnt;
 	static int IdCap;
-
 	const char* id;
 
 public:

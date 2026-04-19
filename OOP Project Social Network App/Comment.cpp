@@ -6,7 +6,7 @@ Comment::Comment() {
 	userMain = nullptr;
 }
 
-Comment::Comment(const char* txt, User* user) {
+Comment::Comment(const char* txt, Author* au) {
 	if (txt) {
 		text = new char[getLength(txt) + 1];
 		copyString(text, txt);
@@ -14,5 +14,10 @@ Comment::Comment(const char* txt, User* user) {
 	else
 		text = nullptr;
 
-	userMain = user;
+	userMain = au;
+}
+
+Comment::~Comment() {
+	delete text;
+	userMain = nullptr; // not gonna delete here
 }

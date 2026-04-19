@@ -123,6 +123,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Activity.cpp" />
     <ClCompile Include="Comment.cpp" />
     <ClCompile Include="Page.cpp" />
     <ClCompile Include="Post.cpp" />
@@ -133,7 +134,10 @@
     <ClCompile Include="User.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Activity.h" />
+    <ClInclude Include="Author.h" />
     <ClInclude Include="Comment.h" />
+    <ClInclude Include="Date.h" />
     <ClInclude Include="Page.h" />
     <ClInclude Include="Post.h" />
     <ClInclude Include="stringFunctions.h" />
