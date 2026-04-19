@@ -123,7 +123,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Comment.cpp" />
     <ClCompile Include="Page.cpp" />
+    <ClCompile Include="Post.cpp" />
     <ClCompile Include="SocialMediaApp.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="stringFunctions.cpp" />
@@ -131,7 +133,9 @@
     <ClCompile Include="User.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Comment.h" />
     <ClInclude Include="Page.h" />
+    <ClInclude Include="Post.h" />
     <ClInclude Include="stringFunctions.h" />
     <ClInclude Include="UniqueElement.h" />
     <ClInclude Include="User.h" />
