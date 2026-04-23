@@ -1,5 +1,6 @@
 #include "User.h"
 #include "Post.h"
+#include "Comment.h"
 #include "stringFunctions.h"
 #include <stdexcept>
 #include <iostream>
@@ -89,4 +90,21 @@ void User::viewTimeLine(const Date& currDate) const {
 			timeline[i]->displayPost();
 		}
 	}
+}
+
+void User::addComment(istream& in, Post* post, Date& currDate) {
+	char* text;
+	in.get(text, '\n'); // take input from user
+	Comment* newCmnt = new Comment(text, this, post, &currDate);
+	int noOfComs = post->commentCount;
+	
+	// resize da array
+	Comment** newComments = new Comment * [noOfComs + 1];
+	for (int i = 0; i < noOfComs; i++) {
+		newComments[i] = post->comments[i]; // copying pointers
+	}
+	delete[] post->comments;
+	newComments[noOfComs] = newCmnt;
+	post->commentCount = noOfComs + 1;
+	post->comments = newComments;
 }

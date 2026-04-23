@@ -6,7 +6,9 @@ Comment::Comment() {
 	userMain = nullptr;
 }
 
-Comment::Comment(const char* txt, Author* au) {
+Comment::Comment(const char* txt, Author* au, Post* origPost, Date* currDate) {
+	if (origPost)
+		this->origPost = origPost;
 	if (txt) {
 		text = new char[getLength(txt) + 1];
 		copyString(text, txt);
@@ -15,6 +17,7 @@ Comment::Comment(const char* txt, Author* au) {
 		text = nullptr;
 
 	userMain = au;
+	this->pDate = currDate;
 }
 
 Comment::~Comment() {

@@ -47,6 +47,9 @@ Post::~Post() {
 	delete[] likedBy;
 	author = nullptr;
 	if (comments) {
+		for (int i = 0; i < commentCount; i++) {
+			delete comments[i]; // composed
+		}
 		delete[] comments;
 	}
 }

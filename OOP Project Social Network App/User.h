@@ -1,6 +1,8 @@
 #pragma once
 #include "UniqueElement.h"
 #include "Author.h"
+
+class Date;
 class Page;
 class Post;
 class User : public Author {
@@ -27,6 +29,7 @@ public:
 	const char* getName() const override;
 	void viewFriendList() const;
 	void viewTimeLine(const Date& currentDate) const;
+	void addComment(istream& in, Post* post, Date& currDate); // requires a text, an author and a pointer to the post
 
 
 	// rest of the functions i'll add later

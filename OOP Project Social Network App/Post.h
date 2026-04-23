@@ -17,18 +17,12 @@ class Post : public UniqueElement { //btw for all of this i am assuming unique d
 	User** likedBy;
 
 	//comments gonna be a class, right?
-	Comment** comments;
+	Comment** comments; // what is a comment owned by? The user owns the comment so it handles the creation and deletions
 	int commentCount;
 
 	Activity* activity;
 
 	const char* imgPath;
-	//Activity seems to be only a subset of Post so ig its not gonna
-	//be its own separate class (P.S idk :p) 
-	// (P.P.S: "Memory" being a further extension down the line)
-	
-	// All of this assuming the one other class Muaaz was 
-	// dereferencing to was comments
 
 public:
 	//default
