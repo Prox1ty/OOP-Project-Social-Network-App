@@ -7,7 +7,7 @@
 
 
 // Default
-Post::Post(): sharedDate() {
+Post::Post() : UniqueElement(), sharedDate() {
 	description = nullptr;
 	countLikes = 0;
 	likedBy = nullptr;
@@ -20,7 +20,8 @@ Post::Post(): sharedDate() {
 
 
 // Parameterized
-Post::Post(const char* text, const Date& currDate, Author* author, Activity* activity): comments(nullptr), imgPath(nullptr) { // currDate will be provided by the driver program
+Post::Post(const char* id, const char* text, const Date& currDate, Author* author, Activity* activity)
+	: UniqueElement(id), comments(nullptr), imgPath(nullptr) { // currDate will be provided by the driver program
  	if (text) {
 		description = new char[getLength(text) + 1];
 		copyString(description, text);
@@ -64,6 +65,21 @@ void Post::displayPost() const {
 	}
 
 	cout << " \"" << description << "\"\n";
+}
+
+bool Post::addLike(User* u) {
+	if (countLikes == 10) return false;
+	User** newLikedBy = new User * [countLikes + 1];
+	
+	for (int i = 0; i < countLikes; i++) {
+		newLikedBy[i] = likedBy[i];
+	}
+	
+	newLikedBy[countLikes] = u;
+	delete[] likedBy;
+	likedBy = newLikedBy;
+	countLikes++;
+	return true;
 }
 
 // addComments, filling likedBy (will be done in user class pretty sure), setting upper limit for comments

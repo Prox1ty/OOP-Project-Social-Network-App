@@ -20,7 +20,7 @@ void Author::addComment(const char* text, Post* post, Date& currDate) {
 	post->comments = newComments;
 } // requires a text, an author and a pointer to the post
 
-void Author::addPost(const Date& currDate, const char* text, Activity* activity) {
+void Author::addPost(const Date& currDate, const char* text, Activity* activity) { // the last bit of input in the instructions text file is basically the likedBy array thingy
 	Post** newTimeline = new Post * [posts + 1];
 
 	for (int i = 0; i < posts; i++) {
@@ -33,4 +33,12 @@ void Author::addPost(const Date& currDate, const char* text, Activity* activity)
 	delete[] timeline;
 	timeline = newTimeline;
 	posts++;
+}
+
+void Author::viewTimeLine(const Date& currDate) const {
+	for (int i = 0; i < posts; i++) {
+		if (timeline[i]->isPostRecent(currDate)) {
+			timeline[i]->displayPost();
+		}
+	}
 }

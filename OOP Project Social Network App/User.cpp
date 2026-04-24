@@ -85,28 +85,15 @@ void User::viewFriendList() const {
 	}
 }
 
-void User::viewTimeLine(const Date& currDate) const {
-	for (int i = 0; i < posts; i++) {
-		if (timeline[i]->isPostRecent(currDate)) {
-			timeline[i]->displayPost();
-		}
-	}
-}
+
 
 void User::likePost(Post* p) {
 	// ensures max likes are 10
-	if (p->countLikes == 10) return;
-
-	int noOfLikes = p->countLikes;
-	User** newLikedBy = new User* [noOfLikes + 1];
-
-	for (int i = 0; i < noOfLikes; i++) {
-		newLikedBy[i] = p->likedBy[i];
+	if (p->addLike(this)) {
+		cout << "Post liked!\n";
 	}
-	newLikedBy[noOfLikes] = this;
-	delete[] p->likedBy;
-	p->likedBy = newLikedBy;
-	p->countLikes = noOfLikes + 1;
+	else {
+		cout << "Error. Post has reached max number of likes\n";
+	}
 }
 
-void User::addPost()

@@ -25,9 +25,7 @@ public:
 	// user functions
 	const char* getName() const override;
 	void viewFriendList() const;
-	void viewTimeLine(const Date& currentDate) const;
 	void likePost(Post* p);
-	void addPost();
 
 	// rest of the functions i'll add later
 };

@@ -126,6 +126,7 @@
     <ClCompile Include="Activity.cpp" />
     <ClCompile Include="Author.cpp" />
     <ClCompile Include="Comment.cpp" />
+    <ClCompile Include="Memory.cpp" />
     <ClCompile Include="Page.cpp" />
     <ClCompile Include="Post.cpp" />
     <ClCompile Include="SocialMediaApp.cpp" />
@@ -139,6 +140,7 @@
     <ClInclude Include="Author.h" />
     <ClInclude Include="Comment.h" />
     <ClInclude Include="Date.h" />
+    <ClInclude Include="Memory.h" />
     <ClInclude Include="Page.h" />
     <ClInclude Include="Post.h" />
     <ClInclude Include="stringFunctions.h" />

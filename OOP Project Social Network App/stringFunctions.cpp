@@ -30,3 +30,59 @@ bool areEqual(const char* s1, const char* s2) {
     // they are equal only if both reached the null terminator at the same time
     return s1[i] == s2[i];
 }
+
+char* join(const char* s1, const char* s2) {
+    if (s1 == nullptr && s2 == nullptr) return nullptr;
+    if (s1 == nullptr) {
+        int len2 = getLength(s2);
+        char* res = new char[len2 + 1];
+        copyString(res, s2);
+        return res;
+    }
+    if (s2 == nullptr) {
+        int len1 = getLength(s1);
+        char* res = new char[len1 + 1];
+        copyString(res, s1);
+        return res;
+    }
+
+    int len1 = getLength(s1);
+    int len2 = getLength(s2);
+
+    // Allocate new memory for combined length + null terminator
+    char* result = new char[len1 + len2 + 1];
+
+    // Copy first string
+    int i = 0;
+    for (; i < len1; i++) {
+        result[i] = s1[i];
+    }
+
+    // Copy second string starting where first one ended
+    for (int j = 0; j < len2; j++, i++) {
+        result[i] = s2[j];
+    }
+
+    result[i] = '\0'; // Add the null terminator
+    return result;
+}
+
+const char* convertIntToChar(int num) {
+    int length = 0;
+    int copy_num = num;
+    while (copy_num) {
+        length++;
+        copy_num /= 10;
+    }
+    copy_num = num;
+    char* charOutput = new char[length];
+    int write_idx = length - 1;
+    while (copy_num && write_idx >= 0) {
+        int temp = copy_num % 10;
+        copy_num /= 10;
+        charOutput[write_idx--] = (temp + '0');
+    }
+    charOutput[length] = '\0';
+
+    return charOutput;
+}

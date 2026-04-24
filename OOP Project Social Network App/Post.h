@@ -29,7 +29,7 @@ public:
 	Post();
 
 	//parameterized
-	Post(const char* text,const Date& currDate, Author* owner, Activity*);
+	Post(const char* id, const char* text,const Date& currDate, Author* owner, Activity*);
 	//is a copy constructor needed? Muaaz: Maybe but we wont bother with that for now
 
 	bool isPostRecent(const Date& currDate) const{	
@@ -40,6 +40,10 @@ public:
 	~Post();
 
 	void displayPost() const;
+	bool addLike(User* u);
+	Author* getAuthor() const {
+		return author;
+	}
 
 	friend class Author;
 
