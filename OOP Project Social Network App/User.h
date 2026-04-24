@@ -12,9 +12,6 @@ class User : public Author {
 	Page** likedPages; // same here
 	int lP;
 
-	Post** timeline; // for user's own posts
-	int posts;
-
 public:
 	// constructors
 	User();
@@ -29,8 +26,8 @@ public:
 	const char* getName() const override;
 	void viewFriendList() const;
 	void viewTimeLine(const Date& currentDate) const;
-	void addComment(istream& in, Post* post, Date& currDate); // requires a text, an author and a pointer to the post
-
+	void likePost(Post* p);
+	void addPost();
 
 	// rest of the functions i'll add later
 };

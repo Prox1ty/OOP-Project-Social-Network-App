@@ -7,8 +7,6 @@ class Post;
 class Page : public Author {
 	const char* title;
 	User* owner; // pointer to owner
-	Post** sharedPosts;
-	int postCount;
 	int likes;
 
 public:

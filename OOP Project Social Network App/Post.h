@@ -41,6 +41,6 @@ public:
 
 	void displayPost() const;
 
-	friend class User;
+	friend class Author;
 
 };

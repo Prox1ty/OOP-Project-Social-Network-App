@@ -1,6 +1,7 @@
 #include "User.h"
 #include "Post.h"
 #include "Comment.h"
+#include "Date.h"
 #include "stringFunctions.h"
 #include <stdexcept>
 #include <iostream>
@@ -92,19 +93,20 @@ void User::viewTimeLine(const Date& currDate) const {
 	}
 }
 
-void User::addComment(istream& in, Post* post, Date& currDate) {
-	char* text;
-	in.get(text, '\n'); // take input from user
-	Comment* newCmnt = new Comment(text, this, post, &currDate);
-	int noOfComs = post->commentCount;
-	
-	// resize da array
-	Comment** newComments = new Comment * [noOfComs + 1];
-	for (int i = 0; i < noOfComs; i++) {
-		newComments[i] = post->comments[i]; // copying pointers
+void User::likePost(Post* p) {
+	// ensures max likes are 10
+	if (p->countLikes == 10) return;
+
+	int noOfLikes = p->countLikes;
+	User** newLikedBy = new User* [noOfLikes + 1];
+
+	for (int i = 0; i < noOfLikes; i++) {
+		newLikedBy[i] = p->likedBy[i];
 	}
-	delete[] post->comments;
-	newComments[noOfComs] = newCmnt;
-	post->commentCount = noOfComs + 1;
-	post->comments = newComments;
+	newLikedBy[noOfLikes] = this;
+	delete[] p->likedBy;
+	p->likedBy = newLikedBy;
+	p->countLikes = noOfLikes + 1;
 }
+
+void User::addPost()
