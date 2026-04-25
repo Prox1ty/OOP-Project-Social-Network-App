@@ -28,4 +28,5 @@ public:
 	void likePost(Post* p);
 
 	// rest of the functions i'll add later
+	void viewHome(const Date& currDate);
 };

@@ -83,3 +83,21 @@ bool Post::addLike(User* u) {
 }
 
 // addComments, filling likedBy (will be done in user class pretty sure), setting upper limit for comments
+
+// added viewLikedList
+void Post::viewLikedList(const char* postId) {
+	if (!id || !postId) return;
+	// verify this is the requested post
+	int i = 0;
+	while (id[i] && postId[i] && id[i] == postId[i]) i++;
+	if (id[i] != postId[i]) return;
+
+	cout << "=== Liked by ===\n";
+	if (countLikes == 0) {
+		cout << "No likes yet.\n";
+		return;
+	}
+	for (int j = 0; j < countLikes; j++) {
+		cout << likedBy[j]->getName() << '\n';
+	}
+}

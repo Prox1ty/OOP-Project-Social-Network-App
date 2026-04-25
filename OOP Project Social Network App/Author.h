@@ -8,6 +8,7 @@ class Date;
 class Activity;
 class Post;
 class Author : public UniqueElement {
+protected:
 	Post** timeline; // for author's own posts
 	int posts;
 public:

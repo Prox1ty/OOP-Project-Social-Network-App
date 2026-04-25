@@ -7,7 +7,8 @@
 #include <iostream>
 using namespace std;
 
-User::User() : Author(), name(nullptr), friendList(nullptr), likedPages(nullptr), friends(0), lP(0), timeline(nullptr) {}
+User::User() : Author(), name(nullptr), friendList(nullptr), likedPages(nullptr), friends(0), lP(0) {}
+//removed timeline from default cuz error was being thrown. i believe cuz compiler said inaccessible so belongs to author
 
 User::User(const char* id, const char* name, int friends, int lP) 
 	: Author(id), name(nullptr), friendList(nullptr), likedPages(nullptr) {
@@ -97,3 +98,31 @@ void User::likePost(Post* p) {
 	}
 }
 
+//added viewHome
+void User::viewHome(const Date& currDate) {
+	cout << "=== Home Feed for " << (name ? name : "Unknown") << " ===\n";
+
+	// posts from friends
+	bool anyFriendPosts = false;
+	for (int i = 0; i < friends; i++) {
+		for (int j = 0; j < friendList[i]->posts; j++) {
+			if (friendList[i]->timeline[j]->isPostRecent(currDate)) {
+				friendList[i]->timeline[j]->displayPost();
+				anyFriendPosts = true;
+			}
+		}
+	}
+	if (!anyFriendPosts) cout << "No recent posts from friends.\n";
+
+	// posts from liked pages
+	bool anyPagePosts = false;
+	for (int i = 0; i < lP; i++) {
+		for (int j = 0; j < likedPages[i]->posts; j++) {
+			if (likedPages[i]->timeline[j]->isPostRecent(currDate)) {
+				likedPages[i]->timeline[j]->displayPost();
+				anyPagePosts = true;
+			}
+		}
+	}
+	if (!anyPagePosts) cout << "No recent posts from liked pages.\n";
+}

@@ -27,7 +27,7 @@ void Author::addPost(const Date& currDate, const char* text, Activity* activity)
 		newTimeline[i] = timeline[i];
 	}
 
-
+	//attempted to fix constructor issue, but like 50 other rise up so yk kill me
 	Post* newP = new Post(text, currDate, this, activity);
 	newTimeline[posts] = newP;
 	delete[] timeline;

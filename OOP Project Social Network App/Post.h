@@ -41,6 +41,7 @@ public:
 
 	void displayPost() const;
 	bool addLike(User* u);
+	void viewLikedList(const char* postId);
 	Author* getAuthor() const {
 		return author;
 	}

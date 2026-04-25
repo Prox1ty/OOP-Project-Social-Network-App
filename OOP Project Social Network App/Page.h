@@ -17,5 +17,6 @@ public:
 	// destructor
 	~Page();
 
-	const char* getName() const override;          
+	const char* getName() const override;  
+	void viewPage(const char* pageId);
 };

@@ -19,3 +19,26 @@ Page::~Page() {
 const char* Page::getName() const {
 	return title;
 }
+
+//added viewPage
+void Page::viewPage(const char* pageId) {
+	if (!id || !pageId) //safety check
+		return;
+
+	int i = 0;
+	while (id[i] && pageId[i] && id[i] == pageId[i]) {
+		id++;
+	}
+
+	if (id[i] != pageId[i])
+		return;
+
+	cout << "=== Page: " << (title ? title : "Untitled") << " ===\n";
+	if (posts == 0) {
+		cout << "No posts yet.\n";
+		return;
+	}
+	for (int j = 0; j < posts; j++) {
+		timeline[j]->displayPost();
+	}
+}
