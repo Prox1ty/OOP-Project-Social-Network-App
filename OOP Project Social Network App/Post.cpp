@@ -1,5 +1,6 @@
 #include "Post.h"
 #include "Date.h"
+#include "User.h"
 #include "Author.h"
 #include "Activity.h"
 #include "stringFunctions.h"
@@ -85,12 +86,7 @@ bool Post::addLike(User* u) {
 // addComments, filling likedBy (will be done in user class pretty sure), setting upper limit for comments
 
 // added viewLikedList
-void Post::viewLikedList(const char* postId) {
-	if (!id || !postId) return;
-	// verify this is the requested post
-	int i = 0;
-	while (id[i] && postId[i] && id[i] == postId[i]) i++;
-	if (id[i] != postId[i]) return;
+void Post::viewLikedList() {
 
 	cout << "=== Liked by ===\n";
 	if (countLikes == 0) {
@@ -100,4 +96,18 @@ void Post::viewLikedList(const char* postId) {
 	for (int j = 0; j < countLikes; j++) {
 		cout << likedBy[j]->getName() << '\n';
 	}
+}
+
+void Post::addComment(Comment* c) {
+	int noOfComs = commentCount;
+
+	// resize da array
+	Comment** newComments = new Comment * [noOfComs + 1];
+	for (int i = 0; i < noOfComs; i++) {
+		newComments[i] = comments[i]; // copying pointers
+	}
+	delete[] comments;
+	newComments[noOfComs] = c;
+	commentCount = noOfComs + 1;
+	comments = newComments;
 }

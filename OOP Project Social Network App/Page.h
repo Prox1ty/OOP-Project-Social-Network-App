@@ -8,6 +8,7 @@ class Page : public Author {
 	const char* title;
 	User* owner; // pointer to owner
 	int likes;
+	Post** sharedPosts;
 
 public:
 	// constructors
@@ -18,5 +19,6 @@ public:
 	~Page();
 
 	const char* getName() const override;  
-	void viewPage(const char* pageId);
+	void viewPage();
+	Post** getSharedPosts();
 };

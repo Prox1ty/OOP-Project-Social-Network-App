@@ -2,6 +2,7 @@
 #include "UniqueElement.h"
 #include <iostream>
 #include "Date.h"
+#include "Post.h"
 using namespace std;
 
 class Date;
@@ -20,6 +21,10 @@ public:
 	Author(const char* id) : UniqueElement(id), posts(0), timeline(nullptr) {}
 	virtual const char* getName() const = 0; // implementation based on child classes
 	void addComment(const char* text, Post* post, Date& currDate); // requires a text, an author and a pointer to the post
-	void addPost(const Date& currDate, const char* text, Activity* activity); // the last bit of input in the instructions text file is basically the likedBy array thingy
+	void addPost(const Date& currDate, const char* text, Activity* activity, const char* id); // the last bit of input in the instructions text file is basically the likedBy array thingy
+	// overload of addPost
+	void addPost(Post* newP);
+	void shareMemory(Date& currDate, const char* text, Post* refPost);
 	void viewTimeLine(const Date& currentDate) const;
+	int countPosts();
 };

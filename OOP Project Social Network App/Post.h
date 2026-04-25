@@ -39,11 +39,26 @@ public:
 	//deconstructor
 	~Post();
 
+	void addComment(Comment* c);
 	void displayPost() const;
 	bool addLike(User* u);
-	void viewLikedList(const char* postId);
+	void viewLikedList();
+
+
 	Author* getAuthor() const {
 		return author;
+	}
+
+	Activity* getActivity() const {
+		return activity;
+	}
+
+	const Date& getDate() const {
+		return sharedDate;
+	}
+
+	const char* getDesc() const {
+		return description;
 	}
 
 	friend class Author;

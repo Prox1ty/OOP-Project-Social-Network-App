@@ -1,5 +1,6 @@
 #include "User.h"
 #include "Post.h"
+#include "Page.h"
 #include "Comment.h"
 #include "Date.h"
 #include "stringFunctions.h"
@@ -117,9 +118,10 @@ void User::viewHome(const Date& currDate) {
 	// posts from liked pages
 	bool anyPagePosts = false;
 	for (int i = 0; i < lP; i++) {
-		for (int j = 0; j < likedPages[i]->posts; j++) {
-			if (likedPages[i]->timeline[j]->isPostRecent(currDate)) {
-				likedPages[i]->timeline[j]->displayPost();
+		for (int j = 0; j < likedPages[i]->countPosts(); j++) {
+			Post** sP = likedPages[i]->getSharedPosts();
+			if (sP[i]->isPostRecent(currDate)) {
+				sP[i]->displayPost();
 				anyPagePosts = true;
 			}
 		}

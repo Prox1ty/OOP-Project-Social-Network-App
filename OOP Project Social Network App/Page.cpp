@@ -1,14 +1,15 @@
 #include "Page.h"
+#include "Post.h"
 #include "Author.h"
 #include "stringFunctions.h"
 #include <stdexcept>
 
-Page::Page() : Author(nullptr), owner(nullptr), sharedPosts(nullptr), likes(0) {}
+Page::Page() : Author(nullptr), owner(nullptr), likes(0) {}
 
 Page::Page(const char* id, const char* title, User* o, int likes) : Author(id), title(title), owner(o), likes(likes), sharedPosts(nullptr) {}
 
 Page::~Page() {
-	delete[] sharedPosts;
+	delete[] sharedPosts; 
 	delete title;
 	sharedPosts = nullptr;
 	owner = nullptr;
@@ -21,24 +22,17 @@ const char* Page::getName() const {
 }
 
 //added viewPage
-void Page::viewPage(const char* pageId) {
-	if (!id || !pageId) //safety check
-		return;
-
-	int i = 0;
-	while (id[i] && pageId[i] && id[i] == pageId[i]) {
-		id++;
-	}
-
-	if (id[i] != pageId[i])
-		return;
-
+void Page::viewPage() {
 	cout << "=== Page: " << (title ? title : "Untitled") << " ===\n";
 	if (posts == 0) {
 		cout << "No posts yet.\n";
 		return;
 	}
 	for (int j = 0; j < posts; j++) {
-		timeline[j]->displayPost();
+		sharedPosts[j]->displayPost(); // changed from timeline to just sharedPosts
 	}
+}
+
+Post** Page::getSharedPosts() {
+	return sharedPosts;
 }
