@@ -27,7 +27,7 @@ User::User(const char* id, const char* name, int friends, int lP)
 };
 
 // copy constructor
-User::User(const User& other) : Author() {
+User::User(const User& other) : Author(other.id) {
 	// shallow copying pointer since id doesn't get destroyed when user is destroyed.
 	id = other.id;
 
@@ -82,7 +82,12 @@ const char* User::getName() const {
 }
 
 void User::viewFriendList() const {
+	if (!friendList || friends == 0) {
+		cout << "No friends yet. \n";
+		return;
+	}
 	for (int i = 0; i < friends; i++) {
+		if (friendList[i])
 		cout << friendList[i]->getName() << '\n';
 	}
 }

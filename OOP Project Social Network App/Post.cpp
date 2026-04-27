@@ -69,15 +69,18 @@ void Post::displayPost() const {
 }
 
 bool Post::addLike(User* u) {
+	if (!u) return false; // null check
 	if (countLikes == 10) return false;
 	User** newLikedBy = new User * [countLikes + 1];
 	
-	for (int i = 0; i < countLikes; i++) {
-		newLikedBy[i] = likedBy[i];
+	if (likedBy) {
+		for (int i = 0; i < countLikes; i++) {
+			newLikedBy[i] = likedBy[i];
+		}
+		delete[] likedBy;
 	}
 	
 	newLikedBy[countLikes] = u;
-	delete[] likedBy;
 	likedBy = newLikedBy;
 	countLikes++;
 	return true;
@@ -89,24 +92,28 @@ bool Post::addLike(User* u) {
 void Post::viewLikedList() {
 
 	cout << "=== Liked by ===\n";
-	if (countLikes == 0) {
+	if (countLikes == 0 || !likedBy) {
 		cout << "No likes yet.\n";
 		return;
 	}
 	for (int j = 0; j < countLikes; j++) {
-		cout << likedBy[j]->getName() << '\n';
+		if (likedBy[j])
+			cout << likedBy[j]->getName() << '\n';
 	}
 }
 
 void Post::addComment(Comment* c) {
+	if (!c) return; // null check
 	int noOfComs = commentCount;
 
 	// resize da array
 	Comment** newComments = new Comment * [noOfComs + 1];
-	for (int i = 0; i < noOfComs; i++) {
-		newComments[i] = comments[i]; // copying pointers
+	if (comments) {
+		for (int i = 0; i < noOfComs; i++) {
+			newComments[i] = comments[i]; // copying pointers
+		}
+		delete[] comments;
 	}
-	delete[] comments;
 	newComments[noOfComs] = c;
 	commentCount = noOfComs + 1;
 	comments = newComments;

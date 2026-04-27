@@ -27,8 +27,13 @@ void Author::addPost(const Date& currDate, const char* text, Activity* activity,
 }
 
 void Author::viewTimeLine(const Date& currDate) const {
+	if (posts == 0 || !timeline) {
+		cout << "No posts yet. \n";
+		return;
+	}
+
 	for (int i = 0; i < posts; i++) {
-		if (timeline[i]->isPostRecent(currDate)) {
+		if (timeline[i] && timeline[i]->isPostRecent(currDate)) {
 			timeline[i]->displayPost();
 		}
 	}

@@ -8,7 +8,7 @@ int Memory::memCount = 0;
 
 // order doesn't really matter in the initializer list, it matters in the class definition (private vars order)
 Memory::Memory(const char* mtext, Date& cDate, Post* op, Author* o) :
-	Post(generateId(), mtext, cDate, o, nullptr), oPost(op) {
+	Post(generateId(), mtext, cDate, o, nullptr), oPost(op) { // using a temporary id in post
 	if (mtext) {
 		this->text = new char[getLength(mtext) + 1];
 		copyString(this->text, mtext);
@@ -25,7 +25,7 @@ const char* Memory::generateId() {
 }
 
 Memory::~Memory() {
-	delete text;
+	delete[] text;
 	oPost = nullptr;
 }
 

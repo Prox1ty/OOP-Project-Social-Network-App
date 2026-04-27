@@ -37,7 +37,7 @@ public:
 	}
 
 	//deconstructor
-	~Post();
+	virtual ~Post();
 
 	void addComment(Comment* c);
 	void displayPost() const;

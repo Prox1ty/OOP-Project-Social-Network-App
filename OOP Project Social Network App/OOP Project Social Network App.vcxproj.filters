@@ -48,6 +48,7 @@
     <ClCompile Include="Memory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Pages.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="User.h">
@@ -80,5 +81,10 @@
     <ClInclude Include="Memory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Users.txt" />
+    <Text Include="Posts.txt" />
+    <Text Include="Comments.txt" />
   </ItemGroup>
 </Project>

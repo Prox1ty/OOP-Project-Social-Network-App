@@ -21,6 +21,6 @@ Comment::Comment(const char* txt, Author* au, Post* origPost, Date* currDate) {
 }
 
 Comment::~Comment() {
-	delete text;
+	delete[] text;
 	userMain = nullptr; // not gonna delete here
 }
