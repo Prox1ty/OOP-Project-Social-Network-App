@@ -118,6 +118,7 @@ public:
 				delete[] id;
 				delete[] title;
 			}
+			infile.close();
 		}
 		catch (const exception& e) {
 			cout << "Error occured in loadPages: " << e.what() << endl;
@@ -224,7 +225,7 @@ public:
 				}
 				infile.ignore(10000, '\n');
 			}
-
+			infile.close();
 		}
 		catch (const exception& e) {
 			cout << "Error occured in loadUsers: " << e.what() << endl;
@@ -250,7 +251,7 @@ public:
 
 			auto parseIndex = [](const char* id) -> int {
 				if (!id) return -1;
-				int i = 0;
+				int i = 4;
 				while (id[i] && !(id[i] >= '0' && id[i] <= '9')) i++;
 				if (!id[i]) return -1;
 				int val = 0;
@@ -284,6 +285,7 @@ public:
 				// Line 4: activity (optional) OR author id
 				// Activity lines: digit 1-4 followed by a space then value text
 				// Author id lines: start with 'u' or 'p'
+				// afternote by muaaz: Line 4 contains the post type not the author type :skull:
 				char nextLine[512];
 				infile.getline(nextLine, 512);
 				int s = 0;
@@ -313,7 +315,7 @@ public:
 				// Both User and Page inherit from Author so assignment works directly
 				Author* postAuthor = nullptr;
 				int authorIdx = parseIndex(authorIdBuf);
-				if (authorType == 1) {  // user-authored post
+				if (authorIdBuf[0] == 'u') {  // user-authored post
 					if (authorIdx >= 0 && authorIdx < userCnt && allUsers[authorIdx])
 						postAuthor = allUsers[authorIdx];
 				}
@@ -347,10 +349,16 @@ public:
 						if (lIdx >= 0 && lIdx < userCnt && allUsers[lIdx])
 							newPost->addLike(allUsers[lIdx]);
 					}
+					else if (likeToken[0] == 'p') {
+						if (lIdx >= 0 && lIdx < pageCnt && allPages[lIdx]) {
+							newPost->addLike(allPages[lIdx]);
+						}
+					}
 					// 'p' tokens in liked-by: add Page overload if needed
 				}
 				infile.ignore(10000, '\n');
 			}
+			infile.close();
 		}
 		catch (const exception& e) {
 			cout << "Error in loadPosts: " << e.what() << endl;
@@ -427,6 +435,7 @@ public:
 					targetPost->addComment(newComment);
 				}
 			}
+			infile.close();
 		}
 		catch (const exception& e) {
 			cout << "Error in loadComments: " << e.what() << endl;

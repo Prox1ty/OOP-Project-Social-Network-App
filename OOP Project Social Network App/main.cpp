@@ -4,7 +4,7 @@
 using namespace std;
 
 int main() {
-	Date today(10, 12, 2024);
+	Date today(15, 11, 2017);
 	SocialMediaApp app(today);
 	app.loadData();
 

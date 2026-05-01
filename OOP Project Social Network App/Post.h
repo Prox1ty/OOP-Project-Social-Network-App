@@ -14,7 +14,7 @@ class Post : public UniqueElement { //btw for all of this i am assuming unique d
 	Date sharedDate; // composition
 	Author* author;
 	int countLikes;
-	User** likedBy;
+	Author** likedBy;
 
 	//comments gonna be a class, right?
 	Comment** comments; // what is a comment owned by? The user owns the comment so it handles the creation and deletions
@@ -30,7 +30,6 @@ public:
 
 	//parameterized
 	Post(const char* id, const char* text,const Date& currDate, Author* owner, Activity*);
-	//is a copy constructor needed? Muaaz: Maybe but we wont bother with that for now
 
 	bool isPostRecent(const Date& currDate) const{	
 		return sharedDate.IsRecent(currDate); // provided by the main driver program
@@ -41,7 +40,7 @@ public:
 
 	void addComment(Comment* c);
 	void displayPost() const;
-	bool addLike(User* u);
+	bool addLike(Author* u);
 	void viewLikedList();
 
 

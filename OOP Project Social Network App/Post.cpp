@@ -69,10 +69,10 @@ void Post::displayPost() const {
 	cout << " \"" << description << "\"\n";
 }
 
-bool Post::addLike(User* u) {
+bool Post::addLike(Author* u) {
 	if (!u) return false; // null check
 	if (countLikes == 10) return false;
-	User** newLikedBy = new User * [countLikes + 1];
+	Author** newLikedBy = new Author * [countLikes + 1];
 	
 	if (likedBy) {
 		for (int i = 0; i < countLikes; i++) {
