@@ -231,4 +231,206 @@ public:
 		}
 	}
 	
+
+	//making the remaining two loads for post and comment 
+	// -- powered by / sponsored by / brought to you by / 
+	// slaved away by AI
+
+	void loadPosts(const char* filename) {
+		try {
+			ifstream infile(filename);
+			if (!infile.is_open())
+				throw std::runtime_error("Cannot open Posts.txt");
+
+			infile >> postCnt;
+			infile.ignore(10000, '\n');
+
+			allPosts = new Post * [postCnt];
+			for (int i = 0; i < postCnt; i++) allPosts[i] = nullptr;
+
+			auto parseIndex = [](const char* id) -> int {
+				if (!id) return -1;
+				int i = 0;
+				while (id[i] && !(id[i] >= '0' && id[i] <= '9')) i++;
+				if (!id[i]) return -1;
+				int val = 0;
+				while (id[i] >= '0' && id[i] <= '9')
+					val = val * 10 + (id[i++] - '0');
+				return val > 0 ? (val - 1) : -1;
+				};
+
+			for (int p = 0; p < postCnt; p++) {
+				while (infile.peek() == '\n' || infile.peek() == '\r')
+					infile.ignore();
+
+				//Line 1: postId and authorType
+				int authorType = 0;
+				char postIdBuf[256];
+				if (!(infile >> authorType >> postIdBuf))
+					throw std::runtime_error("Error reading post header");
+				infile.ignore(10000, '\n');
+
+				//Line 2: date
+				int day, month, year;
+				if (!(infile >> day >> month >> year))
+					throw std::runtime_error("Error reading post date");
+				infile.ignore(10000, '\n');
+				Date postDate(day, month, year);
+
+				// Line 3: description
+				char descBuf[1024];
+				infile.getline(descBuf, 1024);
+
+				// Line 4: activity (optional) OR author id
+				// Activity lines: digit 1-4 followed by a space then value text
+				// Author id lines: start with 'u' or 'p'
+				char nextLine[512];
+				infile.getline(nextLine, 512);
+				int s = 0;
+				while (nextLine[s] == ' ' || nextLine[s] == '\t') s++;
+
+				Activity* act = nullptr;
+				if (nextLine[s] >= '1' && nextLine[s] <= '4' &&
+					(nextLine[s + 1] == ' ' || nextLine[s + 1] == '\t')) {
+					int actType = nextLine[s] - '0';
+					int v = s + 1;
+					while (nextLine[v] == ' ' || nextLine[v] == '\t') v++;
+					act = new Activity(actType, &nextLine[v]);
+
+					// Activity was on this line, so author id is on the next
+					infile.getline(nextLine, 512);
+					s = 0;
+					while (nextLine[s] == ' ' || nextLine[s] == '\t') s++;
+				}
+
+				// Extract the author id token from nextLine
+				char authorIdBuf[256];
+				int a = 0, n = s;
+				while (nextLine[n] && nextLine[n] != ' ' && nextLine[n] != '\t')
+					authorIdBuf[a++] = nextLine[n++];
+				authorIdBuf[a] = '\0';
+
+				// Both User and Page inherit from Author so assignment works directly
+				Author* postAuthor = nullptr;
+				int authorIdx = parseIndex(authorIdBuf);
+				if (authorType == 1) {  // user-authored post
+					if (authorIdx >= 0 && authorIdx < userCnt && allUsers[authorIdx])
+						postAuthor = allUsers[authorIdx];
+				}
+				else {                // page-authored post
+					if (authorIdx >= 0 && authorIdx < pageCnt && allPages[authorIdx])
+						postAuthor = allPages[authorIdx];
+				}
+
+				//Create the Post
+				int postIdx = parseIndex(postIdBuf);
+				if (postIdx < 0 || postIdx >= postCnt)
+					throw std::runtime_error("Invalid post id");
+
+				char* postId = new char[getLength(postIdBuf) + 1];
+				copyString(postId, postIdBuf);
+
+				Post* newPost = new Post(postId, descBuf, postDate, postAuthor, act);
+				allPosts[postIdx] = newPost;
+				delete[] postId;
+
+				// Wire post into its author's timeline so viewTimeLine() works | whatever the heck that means
+				if (postAuthor)
+					postAuthor->addPost(newPost);
+
+				//Liked-by list
+				char likeToken[256];
+				while (infile >> likeToken) {
+					if (areEqual(likeToken, "-1")) break;
+					int lIdx = parseIndex(likeToken);
+					if (likeToken[0] == 'u') {
+						if (lIdx >= 0 && lIdx < userCnt && allUsers[lIdx])
+							newPost->addLike(allUsers[lIdx]);
+					}
+					// 'p' tokens in liked-by: add Page overload if needed
+				}
+				infile.ignore(10000, '\n');
+			}
+		}
+		catch (const exception& e) {
+			cout << "Error in loadPosts: " << e.what() << endl;
+		}
+	}
+
+	void loadComments(const char* filename) {
+		try {
+			ifstream infile(filename);
+			if (!infile.is_open())
+				throw std::runtime_error("Cannot open Comments.txt");
+
+			infile >> commentCnt;
+			infile.ignore(10000, '\n');
+
+			allComments = new Comment * [commentCnt];
+			for (int i = 0; i < commentCnt; i++) allComments[i] = nullptr;
+
+			auto parseIndex = [](const char* id) -> int {
+				if (!id) return -1;
+				int i = 0;
+				while (id[i] && !(id[i] >= '0' && id[i] <= '9')) i++;
+				if (!id[i]) return -1;
+				int val = 0;
+				while (id[i] >= '0' && id[i] <= '9')
+					val = val * 10 + (id[i++] - '0');
+				return val > 0 ? (val - 1) : -1;
+				};
+
+			char commentIdBuf[256];
+			char postIdBuf[256];
+			char authorIdBuf[256];
+			char textBuf[1024];
+
+			for (int c = 0; c < commentCnt; c++) {
+				if (!(infile >> commentIdBuf >> postIdBuf >> authorIdBuf))
+					throw std::runtime_error("Error reading comment fields");
+
+				while (infile.peek() == ' ' || infile.peek() == '\t')
+					infile.ignore();
+				infile.getline(textBuf, 1024);
+
+				// Resolve for post
+				int postIdx = parseIndex(postIdBuf);
+				Post* targetPost = (postIdx >= 0 && postIdx < postCnt)
+					? allPosts[postIdx] : nullptr;
+
+				// Resolve author — User* and Page* both decay to Author* cleanly
+				Author* commentAuthor = nullptr;
+				int authorIdx = parseIndex(authorIdBuf);
+				if (authorIdBuf[0] == 'u') {
+					if (authorIdx >= 0 && authorIdx < userCnt && allUsers[authorIdx])
+						commentAuthor = allUsers[authorIdx];
+				}
+				else if (authorIdBuf[0] == 'p') {
+					if (authorIdx >= 0 && authorIdx < pageCnt && allPages[authorIdx])
+						commentAuthor = allPages[authorIdx];
+				}
+
+				// Use Author::addComment so the Comment is built and wired into
+				// the post in one call so no manual new Comment needed here
+				if (commentAuthor && targetPost) {
+					// addComment creates the Comment internally and calls
+					// post->addComment(), so we just need to track it in allComments.
+					// But since Author::addComment doesn't return the pointer, we
+					// reconstruct it ourselves to store in allComments:  (i will cry)
+					Comment* newComment = new Comment(textBuf, commentAuthor,
+						targetPost,
+						new Date(SystemDate));
+					int commentIdx = parseIndex(commentIdBuf);
+					if (commentIdx >= 0 && commentIdx < commentCnt)
+						allComments[commentIdx] = newComment;
+
+					targetPost->addComment(newComment);
+				}
+			}
+		}
+		catch (const exception& e) {
+			cout << "Error in loadComments: " << e.what() << endl;
+		}
+	}
+
 };
