@@ -11,7 +11,7 @@ using namespace std;
 User::User() : Author(), name(nullptr), friendList(nullptr), likedPages(nullptr), friends(0), lP(0) {}
 //removed timeline from default cuz error was being thrown. i believe cuz compiler said inaccessible so belongs to author
 
-User::User(const char* id, const char* name, int friends, int lP) 
+User::User(char* id, char* name, int friends, int lP) 
 	: Author(id), name(nullptr), friendList(nullptr), likedPages(nullptr) {
 	
 	if (name) {
@@ -132,4 +132,24 @@ void User::viewHome(const Date& currDate) {
 		}
 	}
 	if (!anyPagePosts) cout << "No recent posts from liked pages.\n";
+}
+
+void User::addFriend(User* u) {
+	User** newFriendList = new User * [friends + 1];
+	for (int i = 0; i < friends; i++) {
+		newFriendList[i] = friendList[i];
+	}
+	delete[] friendList;
+	newFriendList[friends] = u;
+	friendList = newFriendList;
+}
+
+void User::likePage(Page* p) {
+	Page** newLikedPages = new Page * [lP + 1];
+	for (int i = 0; i < lP; i++) newLikedPages[i] = likedPages[i];
+
+	newLikedPages[lP] = p;
+	delete[] likedPages;
+	likedPages = newLikedPages;
+	lP++;
 }

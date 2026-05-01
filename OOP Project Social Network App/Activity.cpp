@@ -6,26 +6,23 @@ using namespace std;
 
 Activity::Activity(int k, const char* v) {
 	// copying key
+	const char* activitiesArr[] = {"is feeling", "is thinking about", "is making", "is celebrating"};
 	switch (k) {
 	case 1:
-		const char* temp = "is feeling";
-		key = new char[getLength(temp) + 1];
-		copyString(key, temp);
+		key = new char[getLength(activitiesArr[0]) + 1];
+		copyString(key, activitiesArr[0]);
 		break;
 	case 2:
-		const char* temp = "is thinking about";
-		key = new char[getLength(temp) + 1];
-		copyString(key, temp);
+		key = new char[getLength(activitiesArr[1]) + 1];
+		copyString(key, activitiesArr[1]);
 		break;
 	case 3:
-		const char* temp = "is making";
-		key = new char[getLength(temp) + 1];
-		copyString(key, temp);
+		key = new char[getLength(activitiesArr[2]) + 1];
+		copyString(key, activitiesArr[2]);
 		break;
 	case 4:
-		const char* temp = "is celebrating";
-		key = new char[getLength(temp) + 1];
-		copyString(key, temp);
+		key = new char[getLength(activitiesArr[3]) + 1];
+		copyString(key, activitiesArr[3]);
 		break;
 	}
 	// copying value

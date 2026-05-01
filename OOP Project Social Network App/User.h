@@ -15,7 +15,7 @@ class User : public Author {
 public:
 	// constructors
 	User();
-	User(const char* id, const char* name, int friends, int lP);
+	User(char* id, char* name, int friends, int lP);
 	// copy constructor
 	User(const User& other);
 
@@ -26,7 +26,9 @@ public:
 	const char* getName() const override;
 	void viewFriendList() const;
 	void likePost(Post* p);
+	void addFriend(User* u);
 
 	// rest of the functions i'll add later
 	void viewHome(const Date& currDate);
+	void likePage(Page* p);
 };

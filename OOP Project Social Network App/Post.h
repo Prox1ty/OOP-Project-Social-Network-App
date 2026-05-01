@@ -33,7 +33,7 @@ public:
 	//is a copy constructor needed? Muaaz: Maybe but we wont bother with that for now
 
 	bool isPostRecent(const Date& currDate) const{	
-		sharedDate.IsRecent(currDate); // provided by the main driver program
+		return sharedDate.IsRecent(currDate); // provided by the main driver program
 	}
 
 	//deconstructor
