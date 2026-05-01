@@ -46,6 +46,8 @@ public:
         day = other.day;
         month = other.month;
         year = other.year;
+
+        return *this;
     }
     // Imporatnt for the 24 hour requirement
     bool IsRecent(const Date& currDate) const {

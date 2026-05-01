@@ -13,7 +13,7 @@ protected:
 	Post** timeline; // for author's own posts
 	int posts;
 public:
-	Author() {
+	Author(): UniqueElement() {
 		id = nullptr;
 		posts = 0;
 		timeline = nullptr;

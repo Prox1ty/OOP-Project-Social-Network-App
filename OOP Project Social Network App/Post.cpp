@@ -2,6 +2,7 @@
 #include "Date.h"
 #include "User.h"
 #include "Author.h"
+#include "Comment.h"
 #include "Activity.h"
 #include "stringFunctions.h"
 #include <iostream>

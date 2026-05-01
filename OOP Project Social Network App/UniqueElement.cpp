@@ -30,6 +30,7 @@ void UniqueElement::resize() {
 
 // returns pointer to stored Id. The Id itself is stored by the static array existingIds
 const char* UniqueElement::AddId(const char* newId) {
+	resize();
 	if (newId == nullptr) return nullptr;
 
 	for (int i = 0; i < IdCnt; i++) {
@@ -39,7 +40,6 @@ const char* UniqueElement::AddId(const char* newId) {
 		}
 	}
 
-	resize();
 	int len = getLength(newId);
 	existingIds[IdCnt] = new char [len + 1];
 	copyString(existingIds[IdCnt], newId);

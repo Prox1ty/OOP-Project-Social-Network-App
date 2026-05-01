@@ -1,0 +1,1206 @@
+#include "Activity.h"
+#include <iostream>
+#include "stringFunctions.h"
+
+using namespace std;
+
+Activity::Activity(int k, const char* v) {
+	// copying key
+	const char* activitiesArr[] = {"is feeling", "is thinking about", "is making", "is celebrating"};
+	switch (k) {
+	case 1:
+		key = new char[getLength(activitiesArr[0]) + 1];
+		copyString(key, activitiesArr[0]);
+		break;
+	case 2:
+		key = new char[getLength(activitiesArr[1]) + 1];
+		copyString(key, activitiesArr[1]);
+		break;
+	case 3:
+		key = new char[getLength(activitiesArr[2]) + 1];
+		copyString(key, activitiesArr[2]);
+		break;
+	case 4:
+		key = new char[getLength(activitiesArr[3]) + 1];
+		copyString(key, activitiesArr[3]);
+		break;
+	}
+	// copying value
+	val = new char[getLength(v) + 1];
+	copyString(val, v);
+	
+}
+
+Activity::~Activity() {
+	delete key;
+	delete val;
+}
+
+const char* Activity::GetActivityTypeString() const {
+	return key;
+}
+
+const char* Activity::GetValue() const {
+	return val;
+}#include <iostream>
+#include "Author.h"
+#include "Post.h"
+#include "Date.h"
+#include "Comment.h"
+#include "Memory.h"
+using namespace std;
+
+void Author::addComment(const char* text, Post* post, Date& currDate) {
+	Comment* newCmnt = new Comment(text, this, post, &currDate);
+	post->addComment(newCmnt); 
+} 
+
+void Author::addPost(const Date& currDate, const char* text, Activity* activity, const char* id) { // the last bit of input in the instructions text file is basically the likedBy array thingy
+	Post** newTimeline = new Post * [posts + 1];
+
+	for (int i = 0; i < posts; i++) {
+		newTimeline[i] = timeline[i];
+	}
+
+	//attempted to fix constructor issue, but like 50 other rise up so yk kill me
+	Post* newP = new Post(id, text, currDate, this, activity);
+	newTimeline[posts] = newP;
+	delete[] timeline;
+	timeline = newTimeline;
+	posts++;
+}
+
+void Author::viewTimeLine(const Date& currDate) const {
+	if (posts == 0 || !timeline) {
+		cout << "No posts yet. \n";
+		return;
+	}
+
+	for (int i = 0; i < posts; i++) {
+		if (timeline[i] && timeline[i]->isPostRecent(currDate)) {
+			timeline[i]->displayPost();
+		}
+	}
+}
+
+int Author::countPosts() {
+	return posts;
+}
+
+void Author::addPost(Post* newP) {
+	Post** newTimeline = new Post * [posts + 1];
+	for (int i = 0; i < posts; i++) {
+		newTimeline[i] = timeline[i];
+	}
+	newTimeline[posts] = newP;
+
+	delete[] timeline; // Free the old array of pointers
+	timeline = newTimeline;
+	posts++;
+}
+
+void Author::shareMemory(Date& currDate, const char* text, Post* refPost) {
+	Memory* newM = new Memory(text, currDate, refPost, this);
+	addPost(newM);
+}#include "Comment.h"
+#include "stringFunctions.h"
+
+Comment::Comment() {
+	text = nullptr;
+	userMain = nullptr;
+}
+
+Comment::Comment(const char* txt, Author* au, Post* origPost, Date* currDate) {
+	if (origPost)
+		this->origPost = origPost;
+	if (txt) {
+		text = new char[getLength(txt) + 1];
+		copyString(text, txt);
+	}
+	else
+		text = nullptr;
+
+	userMain = au;
+	this->pDate = currDate;
+}
+
+Comment::~Comment() {
+	delete[] text;
+	userMain = nullptr; // not gonna delete here
+}#include <iostream>
+#include "SocialMediaApp.cpp"
+#include "Date.h"
+using namespace std;
+
+int main() {
+	Date today(10, 12, 2024);
+	SocialMediaApp app(today);
+	app.loadData();
+
+	return 0;
+}
+
+//boop
+//boop x2#include "Memory.h"
+#include "stringFunctions.h"
+#include "Post.h"
+#include "Date.h"
+#include "Author.h"
+using namespace std;
+int Memory::memCount = 0;
+
+// order doesn't really matter in the initializer list, it matters in the class definition (private vars order)
+Memory::Memory(const char* mtext, Date& cDate, Post* op, Author* o) :
+	Post(generateId(), mtext, cDate, o, nullptr), oPost(op) { 
+	// using a temporary id in post
+	if (mtext) {
+		this->text = new char[getLength(mtext) + 1];
+		copyString(this->text, mtext);
+	}
+	else {
+		this->text = nullptr;
+	}
+}
+
+
+const char* Memory::generateId() {
+	const char* newId = join("m", convertIntToChar(Memory::memCount)); //max buffer size is 10
+	return newId;
+}
+
+Memory::~Memory() {
+	delete[] text;
+	oPost = nullptr;
+}
+
+void Memory::displayMemory() const {
+	cout << Post::getAuthor()->getName() << " Shared a memory\n";
+	if (text) {
+		cout << text << endl;
+	}
+	else {
+		cout << "On this day\n";
+	}
+	cout << "\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\" << endl;
+	oPost->displayPost();
+	cout << "\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\" << endl;
+}#include "Page.h"
+#include "Post.h"
+#include "Author.h"
+#include "stringFunctions.h"
+#include <stdexcept>
+
+Page::Page() : Author(nullptr), owner(nullptr), likes(0) {}
+
+Page::Page(const char* id, const char* title, User* o, int likes) : Author(id), title(nullptr), owner(o), likes(likes), sharedPosts(nullptr) {
+	if (title) {
+		int len = getLength(title);
+		this->title = new char[len + 1];
+		copyString(this->title, title);
+	}
+}
+
+Page::~Page() {
+	delete[] sharedPosts; 
+	delete[] title;
+	sharedPosts = nullptr;
+	owner = nullptr;
+	// not deleting id because its not owned by Page (managed by UniqueElement static array).
+	// not deleting owner because we're just storing a pointer, not creating it
+}
+
+const char* Page::getName() const {
+	return title;
+}
+
+//added viewPage
+void Page::viewPage() {
+	cout << "=== Page: " << (title ? title : "Untitled") << " ===\n";
+	if (posts == 0 || !sharedPosts) {
+		cout << "No posts yet.\n";
+		return;
+	}
+	for (int j = 0; j < posts; j++) {
+		if (sharedPosts[j])
+			sharedPosts[j]->displayPost(); // changed from timeline to just sharedPosts
+	}
+}
+
+Post** Page::getSharedPosts() {
+	return sharedPosts;
+}#include "Post.h"
+#include "Date.h"
+#include "User.h"
+#include "Author.h"
+#include "Comment.h"
+#include "Activity.h"
+#include "stringFunctions.h"
+#include <iostream>
+
+
+// Default
+Post::Post() : UniqueElement(), sharedDate() {
+	description = nullptr;
+	countLikes = 0;
+	likedBy = nullptr;
+	activity = nullptr;
+	commentCount = 0;
+	author = nullptr;
+	comments = nullptr;
+	imgPath = nullptr;
+}
+
+
+// Parameterized
+Post::Post(const char* id, const char* text, const Date& currDate, Author* author, Activity* activity)
+	: UniqueElement(id), comments(nullptr), imgPath(nullptr) { // currDate will be provided by the driver program
+ 	if (text) {
+		description = new char[getLength(text) + 1];
+		copyString(description, text);
+	}
+	else {
+		description = nullptr;
+	}
+
+	sharedDate = currDate; 
+
+	countLikes = 0;
+	likedBy = nullptr;
+
+	commentCount = 0;
+
+	this->author = author; // assigning pointer
+	this->activity = activity; // deep copy
+}
+
+// Destructor
+Post::~Post() {
+	// Destructor for Date runs automatically
+	delete[] description;
+	delete[] likedBy;
+	author = nullptr;
+	if (comments) {
+		for (int i = 0; i < commentCount; i++) {
+			delete comments[i]; // composed
+		}
+		delete[] comments;
+	}
+}
+
+void Post::displayPost() const {
+	cout << "---" << author->getName();
+	if (this->activity != nullptr) {
+		cout << " is " << activity->GetActivityTypeString() << " " << activity->GetValue();
+	}
+	else {
+		cout << " shared ";
+	}
+
+	cout << " \"" << description << "\"\n";
+}
+
+bool Post::addLike(User* u) {
+	if (!u) return false; // null check
+	if (countLikes == 10) return false;
+	User** newLikedBy = new User * [countLikes + 1];
+	
+	if (likedBy) {
+		for (int i = 0; i < countLikes; i++) {
+			newLikedBy[i] = likedBy[i];
+		}
+		delete[] likedBy;
+	}
+	
+	newLikedBy[countLikes] = u;
+	likedBy = newLikedBy;
+	countLikes++;
+	return true;
+}
+
+// addComments, filling likedBy (will be done in user class pretty sure), setting upper limit for comments
+
+// added viewLikedList
+void Post::viewLikedList() {
+
+	cout << "=== Liked by ===\n";
+	if (countLikes == 0 || !likedBy) {
+		cout << "No likes yet.\n";
+		return;
+	}
+	for (int j = 0; j < countLikes; j++) {
+		if (likedBy[j])
+			cout << likedBy[j]->getName() << '\n';
+	}
+}
+
+void Post::addComment(Comment* c) {
+	if (!c) return; // null check
+	int noOfComs = commentCount;
+
+	// resize da array
+	Comment** newComments = new Comment * [noOfComs + 1];
+	if (comments) {
+		for (int i = 0; i < noOfComs; i++) {
+			newComments[i] = comments[i]; // copying pointers
+		}
+		delete[] comments;
+	}
+	newComments[noOfComs] = c;
+	commentCount = noOfComs + 1;
+	comments = newComments;
+}#include "User.h"
+#include "Page.h"    
+#include "Date.h"
+#include "Author.h"
+#include "Activity.h"
+#include "Comment.h"
+#include "Post.h"
+#include "UniqueElement.h"
+#include "stringFunctions.h"
+#include <iostream>
+#include <fstream>
+#include <stdexcept>
+using namespace std;
+
+class SocialMediaApp {
+	User** allUsers;
+	Page** allPages;
+	Post** allPosts;
+	Comment** allComments;
+
+	int userCnt;
+	int pageCnt;
+	int postCnt;
+	int commentCnt;
+
+	const Date SystemDate; // will have the user enter this too. This is the main entry point of the program
+public:
+	SocialMediaApp(Date sysD) : SystemDate(sysD), allUsers(nullptr), allPages(nullptr)
+	, allPosts(nullptr), allComments(nullptr), userCnt(0), pageCnt(0), postCnt(0), commentCnt(0) {}
+
+	void loadData() {
+		cout << "Load data running" << endl; // debug message
+		loadPages("Pages.txt");
+		loadUsers("Users.txt");
+		for (int i = 0; i < userCnt; i++) {
+			cout << allUsers[i]->getName() << endl;
+		}
+		/*loadUsers();
+		loadPosts();*/
+	}
+
+	void loadPages(const char* filename) {
+		try {
+			ifstream infile(filename);
+			int cnt;
+			if (!infile.is_open()) {
+				throw std::runtime_error("Error in opening file");
+			}
+
+			infile >> cnt;
+			pageCnt = cnt;
+			infile.ignore(10000, '\n'); // skip rest of the characters, if any.
+
+			allPages = new Page * [pageCnt];
+			for (int i = 0; i < pageCnt; i++) allPages[i] = nullptr;
+
+			char idBuf[256];
+			char titleBuf[256];
+
+			// lambda function to help with finding valid indices
+			// returns an int
+			// [] empty because we don't capture any variable
+			auto parseIndex = [](const char* id) -> int {
+				if (!id) return -1; // nullptr
+				int val = 0;
+				int i = 1; // first index
+				while (id[i] != '\0') {
+					if (id[i] >= '0' && id[i] <= '9')
+						val = val * 10 + (id[i] - '0');
+					else break;
+					i++;
+				}
+
+				return val > 0 ? (val - 1) : -1;
+			};
+
+			for (int p = 0; p < pageCnt; p++) {
+				// read id
+				if (!(infile >> idBuf)) break;
+
+				// title may contain spaces so we switch to getline
+				infile.getline(titleBuf, 256);
+
+				// starting spaces handling
+				int start = 0;
+				while (titleBuf[start] == ' ') start++;
+
+				char* title = nullptr;
+				if (titleBuf[start] == '\0') {
+					// empty title
+					title = new char[1];
+					title[0] = '\0';
+				}
+				else {
+					// pass in an array that starts at index start
+					int len = getLength(&titleBuf[start]);
+					// &titleBuf[start] just passes memory address of the character at index start
+					// if we pass titleBuf as is, what it does under the hood is also just pass a pointer to the first element of the array
+					// so &titleBuf[start] does the same. We need the & because [] operator dereferences the pointer, we now need to go back a step to get the address
+					
+					title = new char[len + 1];
+					copyString(title, &titleBuf[start]);
+				}
+
+				// copying id
+				char* id = new char[getLength(idBuf) + 1];
+				copyString(id, idBuf);
+
+				int idx = parseIndex(idBuf); // validate index
+				if (idx < 0 || idx >= pageCnt) {
+					throw std::runtime_error("Invalid id");
+				}
+
+				Page* newPage = new Page(id, title, nullptr, 0);
+				allPages[idx] = newPage;
+			}
+		}
+		catch (const exception& e) {
+			cout << "Error occured in loadPages: " << e.what() << endl;
+		}
+	}
+	void loadUsers(const char* filename) {
+		try {
+			ifstream infile(filename);
+			int cnt;
+			if (!infile.is_open()) {
+				throw std::runtime_error("Error in opening file");
+			}
+
+			infile >> cnt;
+			userCnt = cnt;
+
+			infile.ignore(10000, '\n');
+
+			allUsers = new User * [userCnt];
+			for (int i = 0; i < userCnt; i++) allUsers[i] = nullptr;
+
+			char idBuf[256];
+			char fName[256];
+			char lName[256];
+
+			// could've also made a private function but this method is cooler hehe
+			auto parseIndex = [](const char* id) {
+				if (!id) return -1;
+				int i = 1;
+				int val = 0;
+
+				while (id[i] != '\0') {
+					if (id[i] >= '0' && id[i] <= '9') {
+						val = val * 10 + (id[i] - '0');
+					}
+					else break;
+					i++;
+				}
+				return val > 0 ? (val - 1) : -1;
+			};
+
+			// initialize user by reading id and name and skip the rest of the line (for now)
+			for (int u = 0; u < userCnt; u++) {
+				if (!(infile >> idBuf)) throw std::runtime_error("Error reading id");
+				if (!(infile >> fName)) throw std::runtime_error("Error reading first name");
+				if (!(infile >> lName)) throw std::runtime_error("Error reading last name");
+
+				char fullName[512];
+				copyString(fullName, fName);
+				concatStr(fullName, " ");
+				concatStr(fullName, lName);
+
+				char* id = new char[getLength(idBuf) + 1];
+				copyString(id, idBuf);
+
+				char* name = new char[getLength(fullName) + 1];
+				copyString(name, fullName);
+
+				int idx = parseIndex(idBuf);
+				if (idx < 0 || idx >= userCnt) {
+					throw std::runtime_error("Invalid Id. Either below zero or exceeds the total number of users");
+				}
+
+				allUsers[idx] = new User(id, name, 0, 0);
+				infile.ignore(10000, '\n');
+			}
+
+			// seek to the beginning of the file to read again
+			infile.clear();
+			infile.seekg(0, ios::beg);
+
+			infile >> cnt; // just to proceed the stream cursor
+			for (int u = 0; u < userCnt; u++) {
+				if (!(infile >> idBuf)) throw std::runtime_error("Error reading id");
+				if (!(infile >> fName)) throw std::runtime_error("Error reading first name");
+				if (!(infile >> lName)) throw std::runtime_error("Error reading last name");
+
+				int currIdx = parseIndex(idBuf); // current user idx in allUsers
+
+				// now read friends till we encounter -1
+				char token[256];
+				if (!(infile >> token)) throw std::runtime_error("Error reading friend");
+				while (!areEqual(token, "-1")) {
+					int fIdx = parseIndex(token);
+					if (fIdx >= 0 && fIdx < userCnt && allUsers[fIdx] && allUsers[currIdx]) {
+						allUsers[currIdx]->addFriend(allUsers[fIdx]);
+					}
+
+					if (!(infile >> token)) throw std::runtime_error("Error reading friend");
+				}
+
+				// now read liked pages
+				if (!(infile >> token)) throw std::runtime_error("Error reading liked page");
+				while (!areEqual(token, "-1")) {
+					int pIdx = parseIndex(token);
+					if (pIdx >= 0 && pIdx < pageCnt && allPages[pIdx] && allUsers[currIdx]) {
+						allUsers[currIdx]->likePage(allPages[pIdx]);
+					}
+
+					if (!(infile >> token)) throw std::runtime_error("Error reading liked page");
+				}
+				infile.ignore(10000, '\n');
+			}
+
+		}
+		catch (const exception& e) {
+			cout << "Error occured in loadUsers: " << e.what() << endl;
+		}
+	}
+	
+};#include "stringFunctions.h"
+
+int getLength(const char* str) {
+    if (str == nullptr) return 0;
+    
+    int count = 0;
+    while (str[count] != '\0') {
+        count++;
+    }
+    return count;
+}
+
+void copyString(char* dest, const char* src) {
+    if (dest == nullptr || src == nullptr) return;
+
+    int i = 0;
+    while (src[i] != '\0') {
+        dest[i] = src[i];
+        i++;
+    }
+    dest[i] = '\0';
+}
+
+bool areEqual(const char* s1, const char* s2) {
+    int i = 0;
+    while (s1[i] != '\0' && s2[i] != '\0') {
+        if (s1[i] != s2[i]) return false;
+        i++;
+    }
+    // they are equal only if both reached the null terminator at the same time
+    return s1[i] == s2[i];
+}
+
+char* join(const char* s1, const char* s2) {
+    if (s1 == nullptr && s2 == nullptr) return nullptr;
+    if (s1 == nullptr) {
+        int len2 = getLength(s2);
+        char* res = new char[len2 + 1];
+        copyString(res, s2);
+        return res;
+    }
+    if (s2 == nullptr) {
+        int len1 = getLength(s1);
+        char* res = new char[len1 + 1];
+        copyString(res, s1);
+        return res;
+    }
+
+    int len1 = getLength(s1);
+    int len2 = getLength(s2);
+
+    // Allocate new memory for combined length + null terminator
+    char* result = new char[len1 + len2 + 1];
+
+    // Copy first string
+    int i = 0;
+    for (; i < len1; i++) {
+        result[i] = s1[i];
+    }
+
+    // Copy second string starting where first one ended
+    for (int j = 0; j < len2; j++, i++) {
+        result[i] = s2[j];
+    }
+
+    result[i] = '\0'; // Add the null terminator
+    return result;
+}
+
+const char* convertIntToChar(int num) {
+    int length = 0;
+    int copy_num = num;
+    while (copy_num) {
+        length++;
+        copy_num /= 10;
+    }
+    copy_num = num;
+    char* charOutput = new char[length];
+    int write_idx = length - 1;
+    while (copy_num && write_idx >= 0) {
+        int temp = copy_num % 10;
+        copy_num /= 10;
+        charOutput[write_idx--] = (temp + '0');
+    }
+    charOutput[length] = '\0';
+
+    return charOutput;
+}
+
+// Appends `src` to the end of `dest`. Assumes `dest` has enough space.
+void concatStr(char* dest, const char* src) {
+	if (!dest || !src) return;
+	int destLen = getLength(dest);
+	int srcLen = getLength(src);
+	for (int i = 0; i <= srcLen; ++i) { // copy including terminating '\0'
+		dest[destLen + i] = src[i];
+	}
+}#include "UniqueElement.h"
+#include "stringFunctions.h"
+#include <stdexcept>
+
+char** UniqueElement::existingIds = nullptr;
+int UniqueElement::IdCnt = 0;
+int UniqueElement::IdCap = 0;
+
+bool UniqueElement::doesIdExist(const char* u_id) {
+	if (u_id == nullptr) return false;
+
+	for (int i = 0; i < IdCnt; i++) {
+		if (areEqual(existingIds[i], u_id)) return true;
+	}
+
+	return false;
+}
+
+void UniqueElement::resize() {
+	if (IdCnt < IdCap) return;
+
+	int newCap = (IdCap == 0) ? 4 : IdCap * 2;
+	char** newArr = new char* [newCap];
+	// shallow copy the pointers
+	for (int i = 0; i < IdCnt; i++) newArr[i] = existingIds[i];
+	delete[] existingIds;
+	existingIds = newArr;
+	IdCap = newCap;
+}
+
+// returns pointer to stored Id. The Id itself is stored by the static array existingIds
+const char* UniqueElement::AddId(const char* newId) {
+	if (newId == nullptr) return nullptr;
+
+	for (int i = 0; i < IdCnt; i++) {
+		if (areEqual(existingIds[i], newId)) {
+			throw std::runtime_error("Duplicate Id passed\n");
+			return nullptr;
+		}
+	}
+
+	resize();
+	int len = getLength(newId);
+	existingIds[IdCnt] = new char [len + 1];
+	copyString(existingIds[IdCnt], newId);
+	IdCnt++;
+	return existingIds[IdCnt - 1];
+}
+
+void UniqueElement::freeIds() {
+	if (existingIds) {
+		for (int i = 0; i < IdCnt; i++) {
+			delete[] existingIds[i];
+			existingIds[i] = nullptr;
+		}
+		delete[] existingIds;
+		existingIds = nullptr;
+	}
+	IdCnt = 0;
+	IdCap = 0;
+}
+
+UniqueElement::UniqueElement() : id(nullptr) {}
+
+UniqueElement::UniqueElement(const char* newId) : id(nullptr) {
+	this->id = AddId(newId);
+}
+
+UniqueElement::~UniqueElement() {
+	// id is not deleted because it's managed by the static array
+}
+
+const char* UniqueElement::getId() const {
+	return id;
+}
+#include "User.h"
+#include "Post.h"
+#include "Page.h"
+#include "Comment.h"
+#include "Date.h"
+#include "stringFunctions.h"
+#include <stdexcept>
+#include <iostream>
+using namespace std;
+
+User::User() : Author(), name(nullptr), friendList(nullptr), likedPages(nullptr), friends(0), lP(0) {}
+//removed timeline from default cuz error was being thrown. i believe cuz compiler said inaccessible so belongs to author
+
+User::User(char* id, char* name, int friends, int lP) 
+	: Author(id), name(nullptr), friendList(nullptr), likedPages(nullptr) {
+	
+	if (name) {
+		int len = getLength(name);
+		char* nm = new char[len + 1];
+		copyString(nm, name);
+		this->name = nm;
+	}
+	else {
+		this->name = nullptr;
+	}
+	// friendList and likedPages are nullptrs by default
+};
+
+// copy constructor
+User::User(const User& other) : Author(other.id) {
+	// shallow copying pointer since id doesn't get destroyed when user is destroyed.
+	id = other.id;
+
+	if (other.name) {
+		int len = getLength(other.name);
+		char* nm = new char[len + 1];
+		copyString(nm, other.name);
+		this->name = nm;
+	}
+	else {
+		this->name = nullptr;
+	}
+
+	// friends
+	friends = other.friends;
+	friendList = nullptr;
+	// copying pointers
+	
+	if (other.friends > 0) {
+		friendList = new User * [friends];
+		for (int i = 0; i < other.friends; i++) {
+			friendList[i] = other.friendList[i];
+			// ensures we have pointers to user objects even if the original pointers are deleted.
+			// consider a destructor execution deleting all the pointers pointing to the user objects, if we delete the friendList array, we delete all pointers
+			// within. Thus leaving us with no pointers pointing to the object now. This isn't a memory leak per se but we still need to copy the pointers
+			// since we're storing pointers in the friendList array
+		}
+	}
+	// liked pages
+
+	lP = other.lP;
+	likedPages = nullptr; 
+
+	if (other.lP > 0) {
+		likedPages = new Page * [lP];
+		for (int i = 0; i < lP; i++) {
+			likedPages[i] = other.likedPages[i];
+		}
+	}
+}
+
+// destructor
+User::~User() {
+	delete[] name;
+	delete[] friendList; // no memory leak because they just store pointers, not heap objects
+	delete[] likedPages;
+	// not deleting id because its not owned by User (managed by UniqueElement static array).
+}
+
+const char* User::getName() const {
+	return this->name;
+}
+
+void User::viewFriendList() const {
+	if (!friendList || friends == 0) {
+		cout << "No friends yet. \n";
+		return;
+	}
+	for (int i = 0; i < friends; i++) {
+		if (friendList[i])
+		cout << friendList[i]->getName() << '\n';
+	}
+}
+
+
+
+void User::likePost(Post* p) {
+	// ensures max likes are 10
+	if (p->addLike(this)) {
+		cout << "Post liked!\n";
+	}
+	else {
+		cout << "Error. Post has reached max number of likes\n";
+	}
+}
+
+//added viewHome
+void User::viewHome(const Date& currDate) {
+	cout << "=== Home Feed for " << (name ? name : "Unknown") << " ===\n";
+
+	// posts from friends
+	bool anyFriendPosts = false;
+	for (int i = 0; i < friends; i++) {
+		for (int j = 0; j < friendList[i]->posts; j++) {
+			if (friendList[i]->timeline[j]->isPostRecent(currDate)) {
+				friendList[i]->timeline[j]->displayPost();
+				anyFriendPosts = true;
+			}
+		}
+	}
+	if (!anyFriendPosts) cout << "No recent posts from friends.\n";
+
+	// posts from liked pages
+	bool anyPagePosts = false;
+	for (int i = 0; i < lP; i++) {
+		for (int j = 0; j < likedPages[i]->countPosts(); j++) {
+			Post** sP = likedPages[i]->getSharedPosts();
+			if (sP[i]->isPostRecent(currDate)) {
+				sP[i]->displayPost();
+				anyPagePosts = true;
+			}
+		}
+	}
+	if (!anyPagePosts) cout << "No recent posts from liked pages.\n";
+}
+
+void User::addFriend(User* u) {
+	User** newFriendList = new User * [friends + 1];
+	for (int i = 0; i < friends; i++) {
+		newFriendList[i] = friendList[i];
+	}
+	delete[] friendList;
+	newFriendList[friends] = u;
+	friendList = newFriendList;
+}
+
+void User::likePage(Page* p) {
+	Page** newLikedPages = new Page * [lP + 1];
+	for (int i = 0; i < lP; i++) newLikedPages[i] = likedPages[i];
+
+	newLikedPages[lP] = p;
+	delete[] likedPages;
+	likedPages = newLikedPages;
+	lP++;
+}
+#pragma once
+
+class Activity {
+	char* key;
+	char* val;
+
+public:
+	Activity(int k, const char* v);
+	~Activity();
+
+	const char* GetActivityTypeString() const;
+	const char* GetValue() const;
+};#pragma once
+#include "UniqueElement.h"
+#include <iostream>
+#include "Date.h"
+#include "Post.h"
+using namespace std;
+
+class Date;
+class Activity;
+class Post;
+class Author : public UniqueElement {
+protected:
+	Post** timeline; // for author's own posts
+	int posts;
+public:
+	Author() {
+		id = nullptr;
+		posts = 0;
+		timeline = nullptr;
+	}
+	Author(const char* id) : UniqueElement(id), posts(0), timeline(nullptr) {}
+	virtual ~Author() {
+		for (int i = 0; i < posts; i++) {
+			delete timeline[i];
+		}
+		delete[] timeline;
+		posts = 0;
+		timeline = nullptr;
+	}
+	virtual const char* getName() const = 0; // implementation based on child classes
+	void addComment(const char* text, Post* post, Date& currDate); // requires a text, an author and a pointer to the post
+	void addPost(const Date& currDate, const char* text, Activity* activity, const char* id); // the last bit of input in the instructions text file is basically the likedBy array thingy
+	// overload of addPost
+	void addPost(Post* newP);
+	void shareMemory(Date& currDate, const char* text, Post* refPost);
+	void viewTimeLine(const Date& currentDate) const;
+	int countPosts();
+};#pragma once
+#include "UniqueElement.h"
+#include "User.h"
+#include <iostream>
+using namespace std;
+
+class Author;
+
+class Comment : public UniqueElement {
+	char* text;
+	Author* userMain;
+	Post* origPost;
+	Date* pDate;
+
+public:
+	//default
+	Comment();
+
+	//parameterized
+	Comment(const char* txt, Author* user, Post* origPost, Date* pDate);
+
+	//deconstructor
+	~Comment();
+};#pragma once
+#include <iostream>
+using namespace std;
+class Date {
+    int day;
+    int month;
+    int year;
+public:
+    Date() {
+        day = 1;
+        month = 1;
+        year = 2017;
+    }
+
+    Date(int d, int m, int y) {
+        if (m > 12) {
+            month = (m % 12 == 0)? m: m % 12; // will reset to 1 if greater than 12
+        }
+        else if (m <= 0) {
+            m = abs(m);
+            month = (m % 12 == 0) ? m : m % 12;
+        }
+        else {
+            month = m;
+        }
+
+        if (y < 2016) {
+            year = 2016;
+        }
+        else if (y > 2026) {
+            year = 2026;
+        }
+        else {
+            year = y;
+        }
+
+        if (m == 2 && (y % 4 != 0) && d >= 28) {
+            day = (d % 28 == 0 ? d : d % 28);
+        }
+        else {
+            day = d;
+        }
+     }
+
+    Date& operator=(const Date& other) {
+        day = other.day;
+        month = other.month;
+        year = other.year;
+
+        return *this;
+    }
+    // Imporatnt for the 24 hour requirement
+    bool IsRecent(const Date& currDate) const {
+        if (this->day == currDate.day || this->day == currDate.day - 1) return true;
+        return false;
+    }
+
+    ~Date() {}
+    
+};#pragma once
+#include "Post.h"
+
+
+class Memory : public Post {
+	static int memCount;
+	char* text;
+	Post* oPost;
+public:
+	Memory(const char* t, Date& cDate, Post* op, Author* o);
+	~Memory();
+	const char* generateId();
+	void displayMemory() const;
+};#pragma once
+#include "Author.h"
+
+class User;
+class Post;
+
+class Page : public Author {
+	char* title;
+	User* owner; // pointer to owner
+	int likes;
+	Post** sharedPosts;
+
+public:
+	// constructors
+	Page();
+	Page(const char* id, const char* title, User* o, int likes = 0);
+
+	// destructor
+	~Page();
+
+	const char* getName() const override;  
+	void viewPage();
+	Post** getSharedPosts();
+};#pragma once
+#include "UniqueElement.h"
+#include "Date.h"
+#include <iostream>
+using namespace std;
+
+class Author; //idk i am just following what you did
+class Comment;
+class Activity;
+class User;
+
+class Post : public UniqueElement { //btw for all of this i am assuming unique deals with the whole assingning ids
+	char* description;
+	Date sharedDate; // composition
+	Author* author;
+	int countLikes;
+	User** likedBy;
+
+	//comments gonna be a class, right?
+	Comment** comments; // what is a comment owned by? The user owns the comment so it handles the creation and deletions
+	int commentCount;
+
+	Activity* activity;
+
+	const char* imgPath;
+
+public:
+	//default
+	Post();
+
+	//parameterized
+	Post(const char* id, const char* text,const Date& currDate, Author* owner, Activity*);
+	//is a copy constructor needed? Muaaz: Maybe but we wont bother with that for now
+
+	bool isPostRecent(const Date& currDate) const{	
+		return sharedDate.IsRecent(currDate); // provided by the main driver program
+	}
+
+	//deconstructor
+	virtual ~Post();
+
+	void addComment(Comment* c);
+	void displayPost() const;
+	bool addLike(User* u);
+	void viewLikedList();
+
+
+	Author* getAuthor() const {
+		return author;
+	}
+
+	Activity* getActivity() const {
+		return activity;
+	}
+
+	const Date& getDate() const {
+		return sharedDate;
+	}
+
+	const char* getDesc() const {
+		return description;
+	}
+
+	friend class Author;
+
+};#pragma once
+
+int getLength(const char* str);
+
+void copyString(char* dest, const char* src);
+
+bool areEqual(const char* s1, const char* s2);
+
+char* join(const char* s1, const char* s2);
+
+const char* convertIntToChar(int num);
+
+void concatStr(char* dest, const char* src);#pragma once
+
+class UniqueElement {
+protected:
+	static char** existingIds;
+	static int IdCnt;
+	static int IdCap;
+	const char* id;
+
+public:
+	// static funcs for ID management
+	static void resize();
+	static const char* AddId(const char* newId);
+	static bool doesIdExist(const char* id);
+	static void freeIds(); // to manage deletion
+
+	// constructors/destructors
+	UniqueElement();
+	UniqueElement(const char* id);
+	virtual ~UniqueElement();
+
+	// getter
+	const char* getId() const;
+};
+#pragma once
+#include "UniqueElement.h"
+#include "Author.h"
+
+class Date;
+class Page;
+class Post;
+class User : public Author {
+	const char* name;
+	User** friendList; // storing pointers to users to save memory
+	int friends;
+	Page** likedPages; // same here
+	int lP;
+
+public:
+	// constructors
+	User();
+	User(char* id, char* name, int friends, int lP);
+	// copy constructor
+	User(const User& other);
+
+	// destructor
+	~User();
+
+	// user functions
+	const char* getName() const override;
+	void viewFriendList() const;
+	void likePost(Post* p);
+	void addFriend(User* u);
+
+	// rest of the functions i'll add later
+	void viewHome(const Date& currDate);
+	void likePage(Page* p);
+};
+

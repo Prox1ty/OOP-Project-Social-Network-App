@@ -142,6 +142,7 @@ void User::addFriend(User* u) {
 	delete[] friendList;
 	newFriendList[friends] = u;
 	friendList = newFriendList;
+	friends++;
 }
 
 void User::likePage(Page* p) {

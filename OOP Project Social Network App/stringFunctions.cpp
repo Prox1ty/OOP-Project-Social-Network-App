@@ -75,7 +75,7 @@ const char* convertIntToChar(int num) {
         copy_num /= 10;
     }
     copy_num = num;
-    char* charOutput = new char[length];
+    char* charOutput = new char[length + 1];
     int write_idx = length - 1;
     while (copy_num && write_idx >= 0) {
         int temp = copy_num % 10;
@@ -85,4 +85,14 @@ const char* convertIntToChar(int num) {
     charOutput[length] = '\0';
 
     return charOutput;
+}
+
+// Appends `src` to the end of `dest`. Assumes `dest` has enough space.
+void concatStr(char* dest, const char* src) {
+	if (!dest || !src) return;
+	int destLen = getLength(dest);
+	int srcLen = getLength(src);
+	for (int i = 0; i <= srcLen; ++i) { // copy including terminating '\0'
+		dest[destLen + i] = src[i];
+	}
 }
