@@ -22,5 +22,12 @@ Comment::Comment(const char* txt, Author* au, Post* origPost, Date* currDate) {
 
 Comment::~Comment() {
 	delete[] text;
+	delete pDate;  
 	userMain = nullptr; // not gonna delete here
+}
+
+void Comment::displayComment() const {
+	cout << "                " << userMain->getName() << " wrote: " 
+		<< text << endl;
+    	
 }

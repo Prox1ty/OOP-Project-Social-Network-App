@@ -4,6 +4,7 @@
 #include "Date.h"
 #include "Comment.h"
 #include "Memory.h"
+#include "stringFunctions.h"
 using namespace std;
 
 void Author::addComment(const char* text, Post* post, Date& currDate) {
@@ -35,6 +36,7 @@ void Author::viewTimeLine(const Date& currDate) const {
 	for (int i = 0; i < posts; i++) {
 		if (timeline[i] && timeline[i]->isPostRecent(currDate)) {
 			timeline[i]->displayPost();
+		//display comments now part of Post
 		}
 	}
 }
@@ -55,7 +57,33 @@ void Author::addPost(Post* newP) {
 	posts++;
 }
 
-void Author::shareMemory(Date& currDate, const char* text, Post* refPost) {
+Memory* Author::shareMemory(Date& currDate, const char* text, Post* refPost) {
+	char buffer[256];
+
+	int dateDifference = 0;
+	char dmy;
+	if (currDate.getYear() - refPost->getDate().getYear() > 0) {
+		dateDifference = currDate.getYear() - refPost->getDate().getYear();
+		dmy = 'Y';
+	}
+	else if (currDate.getMonth() - refPost->getDate().getMonth() > 0) {
+		dateDifference = currDate.getMonth() - refPost->getDate().getMonth() > 0;
+		dmy = 'M';
+	}
+	else {
+		throw std::runtime_error("Itna nostalgic hona achi baat nahi");
+	}
+	const char* dateDiffChar = (char*)(dateDifference + '0');
+	// devious concatenation
+	concatStr(buffer, getName());
+	concatStr(buffer, " shared a memory ~~~...");
+	concatStr(buffer, currDate.getDateStr());
+	concatStr(buffer, "\n\t");
+	concatStr(buffer, dateDiffChar);
+	concatStr(buffer, "\n");
+	concatStr(buffer, refPost->getDesc());
+
 	Memory* newM = new Memory(text, currDate, refPost, this);
 	addPost(newM);
+	return newM;
 }

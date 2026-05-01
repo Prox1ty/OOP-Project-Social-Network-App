@@ -1,10 +1,14 @@
 #pragma once
 #include <iostream>
+#include <cstdio>
+#include "stringFunctions.h"
 using namespace std;
 class Date {
     int day;
     int month;
     int year;
+
+    mutable char dateBuffer[20];
 public:
     Date() {
         day = 1;
@@ -49,10 +53,39 @@ public:
 
         return *this;
     }
+
+    Date(const Date& other) {
+        day = other.day;
+        month = other.month;
+        year = other.year;
+    }
+
+    friend std::ostream& operator <<(std::ostream& out, const Date& obj) {
+        out << obj.day << '/' << obj.month << '/' << obj.year << endl;
+        return out;
+    }
     // Imporatnt for the 24 hour requirement
     bool IsRecent(const Date& currDate) const {
         if (this->day == currDate.day || this->day == currDate.day - 1) return true;
         return false;
+    }
+
+    const char* getDateStr() const {
+        // Format: (DD/MM/YYYY) with leading zeros
+        sprintf_s(dateBuffer, sizeof(dateBuffer), "(%02d/%02d/%04d)", day, month, year);
+        return dateBuffer;
+    }
+
+    int getYear() {
+        return year;
+    }
+
+    int getMonth() {
+        return month;
+    }
+
+    int getDay() {
+        return day;
     }
 
     ~Date() {}

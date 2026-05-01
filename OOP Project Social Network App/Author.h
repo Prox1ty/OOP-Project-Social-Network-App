@@ -2,6 +2,7 @@
 #include "UniqueElement.h"
 #include <iostream>
 #include "Date.h"
+#include "Memory.h"
 #include "Post.h"
 using namespace std;
 
@@ -32,7 +33,8 @@ public:
 	void addPost(const Date& currDate, const char* text, Activity* activity, const char* id); // the last bit of input in the instructions text file is basically the likedBy array thingy
 	// overload of addPost
 	void addPost(Post* newP);
-	void shareMemory(Date& currDate, const char* text, Post* refPost);
+	Memory* shareMemory(Date& currDate, const char* text, Post* refPost);
 	void viewTimeLine(const Date& currentDate) const;
 	int countPosts();
+	
 };

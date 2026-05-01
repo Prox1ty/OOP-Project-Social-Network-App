@@ -21,4 +21,6 @@ public:
 
 	//deconstructor
 	~Comment();
+
+	void displayComment() const;
 };
