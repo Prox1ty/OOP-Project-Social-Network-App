@@ -11,6 +11,8 @@ class User : public Author {
 	int friends;
 	Page** likedPages; // same here
 	int lP;
+	int memories;
+	Post** memArr;
 
 public:
 	// constructors
@@ -27,8 +29,11 @@ public:
 	void viewFriendList() const;
 	void likePost(Post* p);
 	void addFriend(User* u);
+	void addMemory(Post* m);
+	void viewMemories() const;
 
 	// rest of the functions i'll add later
-	void viewHome(const Date& currDate);
+	void viewHome(const Date& currDate) const;
 	void likePage(Page* p);
+	void viewLikedPages() const;
 };

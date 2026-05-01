@@ -52,13 +52,15 @@ public:
 		return activity;
 	}
 
-	const Date& getDate() const {
+	Date& getDate()  {
 		return sharedDate;
 	}
 
 	const char* getDesc() const {
 		return description;
 	}
+
+	
 
 	friend class Author;
 

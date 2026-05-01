@@ -5,6 +5,7 @@
 #include "Activity.h"
 #include "Comment.h"
 #include "Post.h"
+#include "Memory.h"
 #include "UniqueElement.h"
 #include "stringFunctions.h"
 #include <iostream>
@@ -23,21 +24,20 @@ class SocialMediaApp {
 	int postCnt;
 	int commentCnt;
 
-	const Date SystemDate; // will have the user enter this too. This is the main entry point of the program
+	User* currUser;
+
+	Date SystemDate; // will have the user enter this too. This is the main entry point of the program
 public:
-	SocialMediaApp(Date sysD) : SystemDate(sysD), allUsers(nullptr), allPages(nullptr)
+	SocialMediaApp() : SystemDate(), allUsers(nullptr), allPages(nullptr)
 	, allPosts(nullptr), allComments(nullptr), userCnt(0), pageCnt(0), postCnt(0), commentCnt(0) {}
 
 	void loadData() {
 		cout << "Load data running" << endl; // debug message
 		loadPages("Pages.txt");
 		loadUsers("Users.txt");
-		for (int i = 0; i < userCnt; i++) {
-			if (allUsers[i] != nullptr) 
-				cout << allUsers[i]->getName() << endl;
-		}
-		/*loadUsers();
-		loadPosts();*/
+		loadPosts("Posts.txt");
+		loadComments("Comments.txt");
+		
 	}
 
 	void loadPages(const char* filename) {
@@ -84,7 +84,7 @@ public:
 
 				// starting spaces handling
 				int start = 0;
-				while (titleBuf[start] == ' ') start++;
+				while (titleBuf[start] == ' ' || titleBuf[start] == '\t') start++;
 
 				char* title = nullptr;
 				if (titleBuf[start] == '\0') {
@@ -251,7 +251,7 @@ public:
 
 			auto parseIndex = [](const char* id) -> int {
 				if (!id) return -1;
-				int i = 4;
+				int i = 0;
 				while (id[i] && !(id[i] >= '0' && id[i] <= '9')) i++;
 				if (!id[i]) return -1;
 				int val = 0;
@@ -440,6 +440,141 @@ public:
 		catch (const exception& e) {
 			cout << "Error in loadComments: " << e.what() << endl;
 		}
+	}
+
+	bool setCurrUser(const char* id) {
+		bool found = false;
+		for (int i = 0; i < userCnt; i++) {
+			if (areEqual(allUsers[i]->getId(), id)) {
+				currUser = allUsers[i];
+				cout << "Set current user to " << currUser->getId() << endl;
+				cout << currUser->getName() << " successfully set as Current User" << endl;
+				found = true;
+				return true;
+			}
+		}
+
+		if (!found) {
+			throw runtime_error("User does not exist");	
+			return false;
+		}
+
+	}
+
+	void viewFrientList() {
+		cout << currUser->getName() << " - Friend List" << endl;
+		currUser->viewFriendList();
+	}
+
+	void viewHome() {
+		currUser->viewHome(SystemDate); // complete in a bit
+	}
+
+	void setSystemDate() {
+		int day, month, year;
+		cout << "DD/MM/YYYY: ";
+		cin >> day >> month >> year;
+		Date currDate(day, month, year);
+		SystemDate = currDate;
+		cout << "System Date" << SystemDate << endl;
+	}
+
+	void viewLikedPages() {
+		currUser->viewLikedPages();
+	}
+
+	void viewTimeLine() {
+		currUser->viewTimeLine(SystemDate);
+	}
+
+	void viewLikedList(Post* p) {
+		p->viewLikedList();
+	}
+
+	void likePost(const char* postId) {
+		bool found = false;
+		for (int i = 0; i < postCnt; i++) {
+			if (areEqual(postId, allPosts[i]->getId())) {
+				currUser->likePost(allPosts[i]);
+				found = true;
+				break;
+			}
+		}
+		
+		if (!found) cout << "Post not found" << endl;
+	}
+
+	void addComent(const char* postId, const char* comment) {
+		bool found = false;
+		for (int i = 0; i < postCnt; i++) {
+			if (areEqual(postId, allPosts[i]->getId())) {
+				currUser->addComment(comment, allPosts[i], SystemDate);
+				found = true;
+				break;
+			}
+		}
+		if (!found) cout << "Post not found" << endl;
+	}
+
+	void viewPost(const char* postId) {
+		bool found = false;
+		for (int i = 0; i < postCnt; i++) {
+			if (areEqual(postId, allPosts[i]->getId())) {
+				allPosts[i]->displayPost();
+				found = true;
+				break;
+			}
+		}
+
+		if (!found) cout << "Post not found" << endl;
+	}
+	
+	void shareMemory(const char* postId, const char* desc) {
+		Memory* addedMem = nullptr;
+		bool found = false;
+		for (int i = 0; i < postCnt; i++) {
+			if (areEqual(postId, allPosts[i]->getId())) {
+				addedMem = currUser->shareMemory(SystemDate, desc, allPosts[i]);
+				currUser->addMemory(addedMem);
+				found = true;
+				break;
+			}
+		}
+
+		if (!found) cout << "Post not found" << endl;
+	}
+
+	void seeYourMemories() {
+		currUser->viewMemories();
+	}
+
+	void viewUProfile(const char* uId) {
+		bool found = false;
+		for (int i = 0; i < userCnt; i++) {
+			if (areEqual(allUsers[i]->getId(), uId)) {
+				cout << allUsers[i]->getName() << endl;
+				allUsers[i]->viewTimeLine(SystemDate);
+				found = true;
+				break;
+			}
+		}
+
+		if (!found)
+			cout << "User not found" << endl;
+	}
+
+	void viewPageProfile(const char* pId) {
+		bool found = false;
+		for (int i = 0; i < pageCnt; i++) {
+			if (areEqual(allPages[i]->getId(), pId)) {
+				cout << allPages[i]->getName() << endl;
+				allPages[i]->viewTimeLine(SystemDate);
+				found = true;
+				break;
+			}
+		}
+
+		cout << "Page not found" << endl;
 	}
 
 };

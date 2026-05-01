@@ -8,11 +8,11 @@
 #include <iostream>
 using namespace std;
 
-User::User() : Author(), name(nullptr), friendList(nullptr), likedPages(nullptr), friends(0), lP(0) {}
+User::User() : Author(), name(nullptr), friendList(nullptr), likedPages(nullptr), friends(0), lP(0), memArr(nullptr) {}
 //removed timeline from default cuz error was being thrown. i believe cuz compiler said inaccessible so belongs to author
 
 User::User(char* id, char* name, int friends, int lP) 
-	: Author(id), name(nullptr), friendList(nullptr), likedPages(nullptr) {
+	: Author(id), name(nullptr), friendList(nullptr), likedPages(nullptr), memArr(nullptr) {
 	
 	if (name) {
 		int len = getLength(name);
@@ -105,16 +105,19 @@ void User::likePost(Post* p) {
 }
 
 //added viewHome
-void User::viewHome(const Date& currDate) {
+void User::viewHome(const Date& currDate) const {
 	cout << "=== Home Feed for " << (name ? name : "Unknown") << " ===\n";
 
 	// posts from friends
 	bool anyFriendPosts = false;
-	for (int i = 0; i < friends; i++) {
-		for (int j = 0; j < friendList[i]->posts; j++) {
-			if (friendList[i]->timeline[j]->isPostRecent(currDate)) {
-				friendList[i]->timeline[j]->displayPost();
-				anyFriendPosts = true;
+	if (friendList != nullptr) {
+		for (int i = 0; i < friends; i++) {
+			if (friendList[i] == nullptr) continue;
+			for (int j = 0; j < friendList[i]->posts; j++) {
+				if (friendList[i]->timeline[j]->isPostRecent(currDate)) {
+					friendList[i]->timeline[j]->displayPost();
+					anyFriendPosts = true;
+				}
 			}
 		}
 	}
@@ -122,12 +125,18 @@ void User::viewHome(const Date& currDate) {
 
 	// posts from liked pages
 	bool anyPagePosts = false;
-	for (int i = 0; i < lP; i++) {
-		for (int j = 0; j < likedPages[i]->countPosts(); j++) {
-			Post** sP = likedPages[i]->getSharedPosts();
-			if (sP[i]->isPostRecent(currDate)) {
-				sP[i]->displayPost();
-				anyPagePosts = true;
+	if (likedPages != nullptr) {
+		for (int i = 0; i < lP; i++) {
+			if (likedPages[i] != nullptr) {
+				for (int j = 0; j < likedPages[i]->countPosts(); j++) {
+					Post** sP = likedPages[i]->getSharedPosts();
+					if (sP != nullptr && sP[j] != nullptr) {
+						if (sP[j]->isPostRecent(currDate)) {
+							sP[j]->displayPost();
+							anyPagePosts = true;
+						}
+					}
+				}
 			}
 		}
 	}
@@ -153,4 +162,25 @@ void User::likePage(Page* p) {
 	delete[] likedPages;
 	likedPages = newLikedPages;
 	lP++;
+}
+
+void User::viewLikedPages() const {
+	for (int i = 0; i < lP; i++) {
+		cout << likedPages[i]->getId() << " - " << likedPages[i]->getName() << endl;
+	}
+}
+
+void User::addMemory(Post* m) {
+	Post** newMemArr = new Post * [memories + 1];
+	for (int i = 0; i < memories; i++) newMemArr[i] = memArr[i];
+	newMemArr[memories] = m;
+	delete[] memArr;
+	memArr = newMemArr;
+	memories++;
+}
+
+void User::viewMemories() const {
+	for (int i = 0; i < memories; i++) {
+		memArr[i]->displayPost();
+	}
 }
