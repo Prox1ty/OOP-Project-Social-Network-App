@@ -540,13 +540,17 @@ public:
 	}
 	
 	void shareMemory(const char* postId, const char* desc) {
-		Memory* addedMem = nullptr;
 		bool found = false;
 		for (int i = 0; i < postCnt; i++) {
 			if (areEqual(postId, allPosts[i]->getId())) {
-				addedMem = currUser->shareMemory(SystemDate, desc, allPosts[i]);
-				currUser->addMemory(addedMem);
-				found = true;
+				try {
+					Memory* addedMem = currUser->shareMemory(SystemDate, desc, allPosts[i]);
+					currUser->addMemory(addedMem);
+					found = true;
+				}
+				catch (const exception& ex) {
+					cout << "Unable to share memory: " << ex.what() << endl;
+				}
 				break;
 			}
 		}
