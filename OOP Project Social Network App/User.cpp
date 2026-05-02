@@ -135,7 +135,8 @@ void User::viewHome(const Date& currDate) const {
 	}
 	if (!anyFriendPosts) cout << "No recent posts from friends.\n";
 
-	//TO DO: print posts from liked pages correctly
+	//TO DO: print posts from liked pages correctly. 
+	// ^^^^^^^^^^^^Done I think
 	// posts from liked pages
 	bool anyPagePosts = false;
 	if (likedPages != nullptr) {

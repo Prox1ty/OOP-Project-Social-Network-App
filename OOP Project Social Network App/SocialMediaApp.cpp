@@ -472,7 +472,7 @@ public:
 
 	void setSystemDate() {
 		int day, month, year;
-		cout << "DD/MM/YYYY: ";
+		cout << "DD MM YYYY: ";
 		cin >> day >> month >> year;
 		Date currDate(day, month, year);
 		SystemDate = currDate;

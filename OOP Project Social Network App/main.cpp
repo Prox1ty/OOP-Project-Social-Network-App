@@ -72,7 +72,7 @@ int main() {
 					cout << "Type comment: ";
 					cin.getline(buffer, 256);
 
-					app.addComent(postId, buffer);
+					app.addComment(postId, buffer);
 					break;
 
 				case 5:
