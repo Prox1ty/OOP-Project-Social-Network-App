@@ -119,7 +119,7 @@ int main() {
 			}
 		}
 	}
-	catch (const exception e) {
+	catch (const exception& e) {
 		cout << "An Error occured in main: " << e.what();
 	}
 
