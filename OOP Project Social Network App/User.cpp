@@ -141,8 +141,8 @@ void User::viewHome(const Date& currDate) const {
 	if (likedPages != nullptr) {
 		for (int i = 0; i < lP; i++) {
 			if (likedPages[i] != nullptr) {
+				Post** sP = likedPages[i]->getTimeline();
 				for (int j = 0; j < likedPages[i]->countPosts(); j++) {
-					Post** sP = likedPages[i]->getSharedPosts();
 					if (sP != nullptr && sP[j] != nullptr) {
 						if (sP[j]->isPostRecent(currDate)) {
 							sP[j]->displayPost();
