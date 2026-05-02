@@ -52,7 +52,7 @@ public:
 		return activity;
 	}
 
-	Date& getDate()  {
+	const Date& getDate() const {
 		return sharedDate;
 	}
 
