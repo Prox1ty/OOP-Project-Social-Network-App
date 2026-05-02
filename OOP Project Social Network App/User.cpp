@@ -8,11 +8,11 @@
 #include <iostream>
 using namespace std;
 
-User::User() : Author(), name(nullptr), friendList(nullptr), likedPages(nullptr), friends(0), lP(0), memArr(nullptr) {}
+User::User() : Author(), name(nullptr), friendList(nullptr), likedPages(nullptr), friends(0), lP(0), memories(0), memArr(nullptr) {}
 //removed timeline from default cuz error was being thrown. i believe cuz compiler said inaccessible so belongs to author
 
 User::User(char* id, char* name, int friends, int lP) 
-	: Author(id), name(nullptr), friendList(nullptr), likedPages(nullptr), memArr(nullptr) {
+	: Author(id), name(nullptr), friendList(nullptr), likedPages(nullptr), friends(0), lP(0), memories(0), memArr(nullptr) {
 	
 	if (name) {
 		int len = getLength(name);
@@ -67,6 +67,17 @@ User::User(const User& other) : Author(other.id) {
 			likedPages[i] = other.likedPages[i];
 		}
 	}
+
+	// memories
+	memories = other.memories;
+	memArr = nullptr;
+
+	if (other.memories > 0) {
+		memArr = new Post * [memories];
+		for (int i = 0; i < memories; i++) {
+			memArr[i] = other.memArr[i];
+		}
+	}
 }
 
 // destructor
@@ -74,6 +85,7 @@ User::~User() {
 	delete[] name;
 	delete[] friendList; // no memory leak because they just store pointers, not heap objects
 	delete[] likedPages;
+	delete[] memArr;
 	// not deleting id because its not owned by User (managed by UniqueElement static array).
 }
 
