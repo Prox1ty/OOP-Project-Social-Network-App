@@ -514,7 +514,7 @@ public:
 		if (!found) cout << "Post not found" << endl;
 	}
 
-	void addComent(const char* postId, const char* comment) {
+	void addComment(const char* postId, const char* comment) {
 		bool found = false;
 		for (int i = 0; i < postCnt; i++) {
 			if (areEqual(postId, allPosts[i]->getId())) {
