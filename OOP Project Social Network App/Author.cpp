@@ -72,6 +72,7 @@ void Author::addPost(Post* newP) {
 
 Memory* Author::shareMemory(Date& currDate, const char* text, Post* refPost) {
 	char buffer[256];
+	buffer[0] = '\0'; // initialize so concatStr can find the terminator
 
 	int dateDifference = 0;
 	char dmy;
@@ -80,23 +81,25 @@ Memory* Author::shareMemory(Date& currDate, const char* text, Post* refPost) {
 		dmy = 'Y';
 	}
 	else if (currDate.getMonth() - refPost->getDate().getMonth() > 0) {
-		dateDifference = currDate.getMonth() - refPost->getDate().getMonth() > 0;
+		dateDifference = currDate.getMonth() - refPost->getDate().getMonth();
 		dmy = 'M';
 	}
 	else {
 		throw std::runtime_error("Itna nostalgic hona achi baat nahi");
 	}
-	const char* dateDiffChar = (char*)(dateDifference + '0');
+	const char* dateDiffChar = convertIntToChar(dateDifference); // proper int-to-string conversion
 	// devious concatenation
 	concatStr(buffer, getName());
 	concatStr(buffer, " shared a memory ~~~...");
 	concatStr(buffer, currDate.getDateStr());
 	concatStr(buffer, "\n\t");
 	concatStr(buffer, dateDiffChar);
+	concatStr(buffer, (dmy == 'Y') ? " year(s) ago" : " month(s) ago");
 	concatStr(buffer, "\n");
 	concatStr(buffer, refPost->getDesc());
+	delete[] dateDiffChar; // free the heap string from convertIntToChar
 
-	Memory* newM = new Memory(text, currDate, refPost, this);
+	Memory* newM = new Memory(buffer, currDate, refPost, this); // use synthesized buffer
 	addPost(newM);
 	return newM;
 }
