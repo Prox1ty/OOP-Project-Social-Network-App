@@ -578,13 +578,13 @@ public:
 		for (int i = 0; i < pageCnt; i++) {
 			if (areEqual(allPages[i]->getId(), pId)) {
 				cout << allPages[i]->getName() << endl;
-				allPages[i]->viewTimeLine(SystemDate);
+				allPages[i]->viewAllPosts();
 				found = true;
 				break;
 			}
 		}
 
-		cout << "Page not found" << endl;
+		if (!found) cout << "Page not found" << endl;
 	}
 
 };

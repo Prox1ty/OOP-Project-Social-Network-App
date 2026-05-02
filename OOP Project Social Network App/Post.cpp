@@ -58,6 +58,7 @@ Post::~Post() {
 }
 
 void Post::displayPost() const {
+	cout << endl;
 	cout << "---" << author->getName();
 	if (this->activity != nullptr) {
 		cout << " is " << activity->GetActivityTypeString() << " " << activity->GetValue();
@@ -66,6 +67,7 @@ void Post::displayPost() const {
 		cout << " shared ";
 	}
 
+	cout << endl;
 	cout << " \"" << description << "\"\n";
 
 	// to print comments for display

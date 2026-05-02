@@ -41,6 +41,19 @@ void Author::viewTimeLine(const Date& currDate) const {
 	}
 }
 
+//adding a separate function for viewing pages
+void Author::viewAllPosts() const {
+	if (posts == 0 || !timeline) {
+		cout << "No posts yet.\n";
+		return;
+	}
+	for (int i = 0; i < posts; i++) {
+		if (timeline[i])
+			timeline[i]->displayPost();
+	}
+}
+
+
 int Author::countPosts() {
 	return posts;
 }

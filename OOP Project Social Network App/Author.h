@@ -37,4 +37,6 @@ public:
 	void viewTimeLine(const Date& currentDate) const;
 	int countPosts();
 	
+	void viewAllPosts() const;
+
 };

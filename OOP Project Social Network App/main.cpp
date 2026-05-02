@@ -68,8 +68,9 @@ int main() {
 				case 4:
 					cout << "Enter post Id: ";
 					cin >> postId;
+					cin.ignore(10000, '\n');
 					cout << "Type comment: ";
-					cin >> buffer;
+					cin.getline(buffer, 256);
 
 					app.addComent(postId, buffer);
 					break;
