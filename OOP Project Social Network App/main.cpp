@@ -84,8 +84,9 @@ int main() {
 				case 6:
 					cout << "Enter post Id: ";
 					cin >> postId;
+					cin.ignore(10000, '\n');
 					cout << "Enter memory description: ";
-					cin >> buffer;
+					cin.getline(buffer, 256);
 					app.shareMemory(postId, buffer);
 					break;
 
