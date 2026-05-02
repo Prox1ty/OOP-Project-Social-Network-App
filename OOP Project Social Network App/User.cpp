@@ -128,17 +128,21 @@ void User::viewHome(const Date& currDate) const {
 	bool anyPagePosts = false;
 	if (likedPages != nullptr) {
 		for (int i = 0; i < lP; i++) {
-			if (likedPages[i] != nullptr) {
-				for (int j = 0; j < likedPages[i]->countPosts(); j++) {
-					Post** sP = likedPages[i]->getSharedPosts();
-					if (sP != nullptr && sP[j] != nullptr) {
-						if (sP[j]->isPostRecent(currDate)) {
-							sP[j]->displayPost();
-							anyPagePosts = true;
-						}
-					}
+			if (likedPages[i] == nullptr) continue;
+
+			Post** sP = likedPages[i]->getTimeline();  // ← changed
+			int count = likedPages[i]->countPosts();   // ← changed
+
+			if (sP == nullptr) continue;
+			for (int j = 0; j < count; j++) {
+				if (sP[j] == nullptr) continue;
+				if (sP[j]->isPostRecent(currDate)) {
+					sP[j]->displayPost();
+					anyPagePosts = true;
 				}
 			}
+		}
+	}
 	if (!anyPagePosts) cout << "No recent posts from liked pages.\n";
 }
 

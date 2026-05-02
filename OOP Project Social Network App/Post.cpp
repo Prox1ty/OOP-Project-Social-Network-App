@@ -68,7 +68,10 @@ void Post::displayPost() const {
 	}
 
 	cout << endl;
-	cout << " \"" << description << "\"\n";
+	if (description)
+		cout << "\t\"" << description << "\"" << " "
+		<< sharedDate.getDateStr() << "\n";
+
 
 	// to print comments for display
 	for (int i = 0; i < commentCount; i++) {

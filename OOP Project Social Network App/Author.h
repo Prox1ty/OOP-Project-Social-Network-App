@@ -39,4 +39,6 @@ public:
 	
 	void viewAllPosts() const;
 
+	Post** getTimeline() const;
+
 };

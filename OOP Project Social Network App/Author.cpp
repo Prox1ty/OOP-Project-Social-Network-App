@@ -100,3 +100,8 @@ Memory* Author::shareMemory(Date& currDate, const char* text, Post* refPost) {
 	addPost(newM);
 	return newM;
 }
+
+
+Post** Author::getTimeline() const {
+	return timeline;
+}

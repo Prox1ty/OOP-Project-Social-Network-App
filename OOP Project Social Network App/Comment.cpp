@@ -29,5 +29,5 @@ Comment::~Comment() {
 void Comment::displayComment() const {
 	cout << "                " << userMain->getName() << " wrote: " 
 		<< text << endl;
-    	
+    
 }
