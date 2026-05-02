@@ -1,4 +1,5 @@
 #include "Comment.h"
+#include "Date.h"
 #include "stringFunctions.h"
 
 Comment::Comment() {
@@ -17,7 +18,7 @@ Comment::Comment(const char* txt, Author* au, Post* origPost, Date* currDate) {
 		text = nullptr;
 
 	userMain = au;
-	this->pDate = currDate;
+	this->pDate = currDate ? new Date(*currDate) : nullptr;
 }
 
 Comment::~Comment() {
@@ -27,7 +28,7 @@ Comment::~Comment() {
 }
 
 void Comment::displayComment() const {
-	cout << userMain->getName() << " wrote: \n";
-	cout << text << " ~ " << *pDate << endl;
-
+	cout << "                " << userMain->getName() << " wrote: " 
+		<< text << endl;
+    	
 }

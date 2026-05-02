@@ -36,5 +36,7 @@ public:
 	Memory* shareMemory(Date& currDate, const char* text, Post* refPost);
 	void viewTimeLine(const Date& currentDate) const;
 	int countPosts();
-	
+	Post** getTimeline() const { return timeline; }
+	void viewAllPosts() const;
+
 };

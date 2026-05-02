@@ -427,7 +427,7 @@ public:
 					// reconstruct it ourselves to store in allComments:  (i will cry)
 					Comment* newComment = new Comment(textBuf, commentAuthor,
 						targetPost,
-						new Date(SystemDate));
+						&SystemDate);
 					int commentIdx = parseIndex(commentIdBuf);
 					if (commentIdx >= 0 && commentIdx < commentCnt)
 						allComments[commentIdx] = newComment;
@@ -447,7 +447,7 @@ public:
 		for (int i = 0; i < userCnt; i++) {
 			if (areEqual(allUsers[i]->getId(), id)) {
 				currUser = allUsers[i];
-				cout << "Set current user to " << currUser->getId() << endl;
+				//removed "set current user | felt redundant"
 				cout << currUser->getName() << " successfully set as Current User" << endl;
 				found = true;
 				return true;
@@ -455,7 +455,6 @@ public:
 		}
 
 		if (!found) {
-			throw runtime_error("User does not exist");	
 			return false;
 		}
 
@@ -463,6 +462,7 @@ public:
 
 	void viewFrientList() {
 		cout << currUser->getName() << " - Friend List" << endl;
+		cout << endl;
 		currUser->viewFriendList();
 	}
 
@@ -480,6 +480,8 @@ public:
 	}
 
 	void viewLikedPages() {
+		cout << currUser->getName() << " - Liked Pages" << endl;
+		cout << endl;
 		currUser->viewLikedPages();
 	}
 
@@ -487,8 +489,15 @@ public:
 		currUser->viewTimeLine(SystemDate);
 	}
 
-	void viewLikedList(Post* p) {
-		p->viewLikedList();
+	//ammended viewLikedList
+	void viewLikedList(const char* postId) {
+		for (int i = 0; i < postCnt; i++) {
+			if (areEqual(allPosts[i]->getId(), postId)) {
+				allPosts[i]->viewLikedList();
+				return;
+			}
+		}
+		cout << "Post not found\n";
 	}
 
 	void likePost(const char* postId) {
@@ -504,7 +513,7 @@ public:
 		if (!found) cout << "Post not found" << endl;
 	}
 
-	void addComent(const char* postId, const char* comment) {
+	void addComment(const char* postId, const char* comment) {
 		bool found = false;
 		for (int i = 0; i < postCnt; i++) {
 			if (areEqual(postId, allPosts[i]->getId())) {
@@ -530,13 +539,17 @@ public:
 	}
 	
 	void shareMemory(const char* postId, const char* desc) {
-		Memory* addedMem = nullptr;
 		bool found = false;
 		for (int i = 0; i < postCnt; i++) {
 			if (areEqual(postId, allPosts[i]->getId())) {
-				addedMem = currUser->shareMemory(SystemDate, desc, allPosts[i]);
-				currUser->addMemory(addedMem);
-				found = true;
+				try {
+					Memory* addedMem = currUser->shareMemory(SystemDate, desc, allPosts[i]);
+					currUser->addMemory(addedMem);
+					found = true;
+				}
+				catch (const exception& ex) {
+					cout << "Unable to share memory: " << ex.what() << endl;
+				}
 				break;
 			}
 		}
@@ -568,13 +581,13 @@ public:
 		for (int i = 0; i < pageCnt; i++) {
 			if (areEqual(allPages[i]->getId(), pId)) {
 				cout << allPages[i]->getName() << endl;
-				allPages[i]->viewTimeLine(SystemDate);
+				allPages[i]->viewAllPosts();
 				found = true;
 				break;
 			}
 		}
 
-		cout << "Page not found" << endl;
+		if (!found) cout << "Page not found" << endl;
 	}
 
 };

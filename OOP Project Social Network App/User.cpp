@@ -8,11 +8,11 @@
 #include <iostream>
 using namespace std;
 
-User::User() : Author(), name(nullptr), friendList(nullptr), likedPages(nullptr), friends(0), lP(0), memArr(nullptr) {}
+User::User() : Author(), name(nullptr), friendList(nullptr), likedPages(nullptr), friends(0), lP(0), memories(0), memArr(nullptr) {}
 //removed timeline from default cuz error was being thrown. i believe cuz compiler said inaccessible so belongs to author
 
 User::User(char* id, char* name, int friends, int lP) 
-	: Author(id), name(nullptr), friendList(nullptr), likedPages(nullptr), memArr(nullptr) {
+	: Author(id), name(nullptr), friendList(nullptr), likedPages(nullptr), friends(0), lP(0), memories(0), memArr(nullptr) {
 	
 	if (name) {
 		int len = getLength(name);
@@ -67,6 +67,17 @@ User::User(const User& other) : Author(other.id) {
 			likedPages[i] = other.likedPages[i];
 		}
 	}
+
+	// memories
+	memories = other.memories;
+	memArr = nullptr;
+
+	if (other.memories > 0) {
+		memArr = new Post * [memories];
+		for (int i = 0; i < memories; i++) {
+			memArr[i] = other.memArr[i];
+		}
+	}
 }
 
 // destructor
@@ -74,6 +85,7 @@ User::~User() {
 	delete[] name;
 	delete[] friendList; // no memory leak because they just store pointers, not heap objects
 	delete[] likedPages;
+	delete[] memArr;
 	// not deleting id because its not owned by User (managed by UniqueElement static array).
 }
 
@@ -88,7 +100,7 @@ void User::viewFriendList() const {
 	}
 	for (int i = 0; i < friends; i++) {
 		if (friendList[i])
-		cout << friendList[i]->getName() << '\n';
+		cout << friendList[i]->getId() << " - " << friendList[i]->getName() << '\n';
 	}
 }
 
@@ -106,7 +118,7 @@ void User::likePost(Post* p) {
 
 //added viewHome
 void User::viewHome(const Date& currDate) const {
-	cout << "=== Home Feed for " << (name ? name : "Unknown") << " ===\n";
+	cout << (name ? name : "Unknown") << "- Home Page\n";
 
 	// posts from friends
 	bool anyFriendPosts = false;
@@ -123,13 +135,14 @@ void User::viewHome(const Date& currDate) const {
 	}
 	if (!anyFriendPosts) cout << "No recent posts from friends.\n";
 
+	//TO DO: print posts from liked pages correctly
 	// posts from liked pages
 	bool anyPagePosts = false;
 	if (likedPages != nullptr) {
 		for (int i = 0; i < lP; i++) {
 			if (likedPages[i] != nullptr) {
+				Post** sP = likedPages[i]->getTimeline();
 				for (int j = 0; j < likedPages[i]->countPosts(); j++) {
-					Post** sP = likedPages[i]->getSharedPosts();
 					if (sP != nullptr && sP[j] != nullptr) {
 						if (sP[j]->isPostRecent(currDate)) {
 							sP[j]->displayPost();

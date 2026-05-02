@@ -58,6 +58,7 @@ Post::~Post() {
 }
 
 void Post::displayPost() const {
+	cout << endl;
 	cout << "---" << author->getName();
 	if (this->activity != nullptr) {
 		cout << " is " << activity->GetActivityTypeString() << " " << activity->GetValue();
@@ -66,7 +67,15 @@ void Post::displayPost() const {
 		cout << " shared ";
 	}
 
+	cout << endl;
 	cout << " \"" << description << "\"\n";
+
+	// to print comments for display
+	for (int i = 0; i < commentCount; i++) {
+		if (comments[i])
+			comments[i]->displayComment();
+	}
+
 }
 
 bool Post::addLike(Author* u) {
@@ -92,7 +101,8 @@ bool Post::addLike(Author* u) {
 // added viewLikedList
 void Post::viewLikedList() {
 
-	cout << "=== Liked by ===\n";
+	cout << "Post Liked by:\n";
+	cout << endl;
 	if (countLikes == 0 || !likedBy) {
 		cout << "No likes yet.\n";
 		return;

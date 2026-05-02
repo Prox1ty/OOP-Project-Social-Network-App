@@ -9,12 +9,7 @@ int main() {
 		app.setSystemDate();
 		app.loadData();
 		char temp[10];
-		cout << "Set current user to: ";
-		cin >> temp;
-		while (!app.setCurrUser(temp)) {
-			cout << "Invalid user. Please select an existing user: ";
-			cin >> temp;
-		}
+
 		
 		int choice;
 		char uId[10];
@@ -22,84 +17,113 @@ int main() {
 		char postId[10];
 		char buffer[256];
 		
-		while (true) {
-			cout << "Enter command: \n"
-				<< "1. View Home\n"
-				<< "2. Like a post\n"
-				<< "3. View Likes\n"
-				<< "4. Comment on a Post\n"
-				<< "5. View a Post\n"
-				<< "6. Share a Memory\n"
-				<< "7. View a User's profile\n"
-				<< "8. View Friend List\n"
-				<< "9. View Page\n"
-				<< "Your choice: ";
+		//Can now login on runtime
+		while (true) { 
+			cout << "Set current user to: ";
+			cin >> temp;
 
-			cin >> choice;
+			while (!app.setCurrUser(temp)) {
+				cout << "Invalid user. Please select an existing user: ";
+				cin >> temp;
+			}
 
-			switch (choice) {
-			case 1:
-				app.viewHome();
-				break;
-			case 2:
-				cout << "Enter post Id: ";
-				cin >> postId;
-				app.likePost(postId);
-				break;
-			case 3:
-				cout << "Enter post Id: ";
-				cin >> postId;
-				app.viewPost(postId);
-				break;
 
-			case 4:
-				cout << "Enter post Id: ";
-				cin >> postId;
-				cout << "Type comment: ";
-				cin >> buffer;
+			bool userSelection = false;
+			while (!userSelection) {
+				cout << "\nEnter command: \n"
+					<< "0. Login to Another Account\n"
+					<< "1. View Home\n"
+					<< "2. Like a post\n"
+					<< "3. View Liked Pages\n"
+					<< "4. Comment on a Post\n"
+					<< "5. View a Post\n"
+					<< "6. Share a Memory\n"
+					<< "7. View a User's profile (Timeline)\n"
+					<< "8. View Friend List\n"
+					<< "9. View Page\n"
+					<< "10. View Liked List\n"
+					<< "Your choice: ";
 
-				app.addComent(postId, buffer);
-				break;
+				cin >> choice;
+				cout << endl;
 
-			case 5:
-				cout << "Enter post Id: ";
-				cin >> postId;
-				app.viewPost(postId);
-				break;
+				switch (choice) {
 
-			case 6:
-				cout << "Enter post Id: ";
-				cin >> postId;
-				cout << "Enter memory description: ";
-				cin >> buffer;
-				app.shareMemory(postId, buffer);
-				break;
+				case 0:
+					userSelection = true;
+					break;
 
-			case 7:
-				cout << "Enter User Id: ";
-				cin >> uId;
-				app.viewUProfile(uId);
-				break;
+				case 1:
+					app.viewHome();
+					break;
+				case 2:
+					cout << "Enter post Id: ";
+					cin >> postId;
+					app.likePost(postId);
+					break;
+				case 3:
+					app.viewLikedPages();
+					break;
 
-			case 8:
-				app.viewFrientList();
-				break;
+				case 4:
+					cout << "Enter post Id: ";
+					cin >> postId;
+					cin.ignore(10000, '\n');
+					cout << "Type comment: ";
+					cin.getline(buffer, 256);
 
-			case 9:
-				cout << "Enter page Id: ";
-				cin >> pId;
-				app.viewPageProfile(pId);
-				break;
+					app.addComent(postId, buffer);
+					break;
 
-			default:
-				cout << "Invalid action" << endl;
-				break;
+				case 5:
+					cout << "Enter post Id: ";
+					cin >> postId;
+					app.viewPost(postId);
+					break;
+
+				case 6:
+					cout << "Enter post Id: ";
+					cin >> postId;
+					cin.ignore(10000, '\n');
+					cout << "Enter memory description: ";
+					cin.getline(buffer, 256);
+					app.shareMemory(postId, buffer);
+					break;
+
+				case 7:
+					cout << "Enter User Id: ";
+					cin >> uId;
+					app.viewUProfile(uId);
+					break;
+
+				case 8:
+					app.viewFrientList();
+					break;
+
+				case 9:
+					cout << "Enter page Id: ";
+					cin >> pId;
+					app.viewPageProfile(pId);
+					break;
+
+				case 10:
+					cout << "Enter post Id: ";
+					cin >> postId;
+					app.viewLikedList(postId);
+					break;
+
+				default:
+					cout << "Invalid action" << endl;
+					break;
+				}
 			}
 		}
 	}
-	catch (const exception e) {
+	catch (const exception& e) {
 		cout << "An Error occured in main: " << e.what();
 	}
+
+	cout << endl;
 
 	return 0;
 }
