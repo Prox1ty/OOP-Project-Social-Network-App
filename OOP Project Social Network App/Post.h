@@ -42,6 +42,7 @@ public:
 	void displayPost() const;
 	bool addLike(Author* u);
 	void viewLikedList();
+	bool isLikedBy(Author* au);
 
 
 	Author* getAuthor() const {

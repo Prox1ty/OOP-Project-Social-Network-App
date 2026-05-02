@@ -22,6 +22,7 @@ Memory::Memory(const char* mtext, Date& cDate, Post* op, Author* o) :
 
 const char* Memory::generateId() {
 	const char* newId = join("m", convertIntToChar(Memory::memCount)); //max buffer size is 10
+	memCount++;
 	return newId;
 }
 

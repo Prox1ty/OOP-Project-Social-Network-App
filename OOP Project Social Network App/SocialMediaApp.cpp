@@ -460,7 +460,7 @@ public:
 
 	}
 
-	void viewFrientList() {
+	void viewFriendList() {
 		cout << currUser->getName() << " - Friend List" << endl;
 		cout << endl;
 		currUser->viewFriendList();
@@ -504,6 +504,10 @@ public:
 		bool found = false;
 		for (int i = 0; i < postCnt; i++) {
 			if (areEqual(postId, allPosts[i]->getId())) {
+				if (allPosts[i]->isLikedBy(currUser)) {
+					cout << "Post already liked!\n";
+					return;
+				}
 				currUser->likePost(allPosts[i]);
 				found = true;
 				break;

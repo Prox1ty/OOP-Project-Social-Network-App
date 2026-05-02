@@ -96,6 +96,8 @@ Memory* Author::shareMemory(Date& currDate, const char* text, Post* refPost) {
 	concatStr(buffer, dateDiffChar);
 	concatStr(buffer, (dmy == 'Y') ? " year(s) ago" : " month(s) ago");
 	concatStr(buffer, "\n");
+	concatStr(buffer, text);
+	concatStr(buffer, "\n");
 	concatStr(buffer, refPost->getDesc());
 	delete[] dateDiffChar; // free the heap string from convertIntToChar
 

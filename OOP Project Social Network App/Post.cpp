@@ -129,3 +129,14 @@ void Post::addComment(Comment* c) {
 	commentCount = noOfComs + 1;
 	comments = newComments;
 }
+
+bool Post::isLikedBy(Author* au) {
+	for (int i = 0; i < countLikes; i++) {
+		if (likedBy[i] == au) {
+			cout << "Already liked post\n";
+			return true;
+		}
+	}
+
+	return false;
+}

@@ -5,6 +5,8 @@
 Comment::Comment() {
 	text = nullptr;
 	userMain = nullptr;
+	origPost = nullptr;
+	pDate = nullptr;
 }
 
 Comment::Comment(const char* txt, Author* au, Post* origPost, Date* currDate) {
@@ -28,7 +30,7 @@ Comment::~Comment() {
 }
 
 void Comment::displayComment() const {
-	cout << "                " << userMain->getName() << " wrote: " 
+	cout << "                " << userMain->getName() << " wrote: " //no idea why we have a massive blank space probably muizz's doing
 		<< text << endl;
     	
 }

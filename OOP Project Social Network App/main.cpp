@@ -42,6 +42,7 @@ int main() {
 					<< "8. View Friend List\n"
 					<< "9. View Page\n"
 					<< "10. View Liked List\n"
+					<< "11. See your Memories\n"
 					<< "Your choice: ";
 
 				cin >> choice;
@@ -97,7 +98,7 @@ int main() {
 					break;
 
 				case 8:
-					app.viewFrientList();
+					app.viewFriendList();
 					break;
 
 				case 9:
@@ -111,6 +112,9 @@ int main() {
 					cin >> postId;
 					app.viewLikedList(postId);
 					break;
+
+				case 11:
+					app.seeYourMemories();
 
 				default:
 					cout << "Invalid action" << endl;
