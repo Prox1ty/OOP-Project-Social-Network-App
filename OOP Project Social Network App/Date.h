@@ -14,6 +14,7 @@ public:
         day = 1;
         month = 1;
         year = 2017;
+        dateBuffer[0] = '\0'; // to get rid of stupid error
     }
 
     Date(int d, int m, int y) {
@@ -44,6 +45,8 @@ public:
         else {
             day = d;
         }
+
+        dateBuffer[0] = '\0';
      }
 
     Date& operator=(const Date& other) {
@@ -58,6 +61,8 @@ public:
         day = other.day;
         month = other.month;
         year = other.year;
+
+        dateBuffer[0] = '\0';
     }
 
     friend std::ostream& operator <<(std::ostream& out, const Date& obj) {
@@ -76,15 +81,15 @@ public:
         return dateBuffer;
     }
 
-    int getYear() {
+    int getYear() const {
         return year;
     }
 
-    int getMonth() {
+    int getMonth() const {
         return month;
     }
 
-    int getDay() {
+    int getDay() const {
         return day;
     }
 
