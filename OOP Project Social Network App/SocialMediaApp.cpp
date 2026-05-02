@@ -427,7 +427,7 @@ public:
 					// reconstruct it ourselves to store in allComments:  (i will cry)
 					Comment* newComment = new Comment(textBuf, commentAuthor,
 						targetPost,
-						new Date(SystemDate));
+						&SystemDate);
 					int commentIdx = parseIndex(commentIdBuf);
 					if (commentIdx >= 0 && commentIdx < commentCnt)
 						allComments[commentIdx] = newComment;
