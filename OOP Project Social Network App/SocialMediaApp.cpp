@@ -455,7 +455,6 @@ public:
 		}
 
 		if (!found) {
-			throw runtime_error("User does not exist");	
 			return false;
 		}
 
