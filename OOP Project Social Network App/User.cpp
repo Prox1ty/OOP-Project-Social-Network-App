@@ -139,8 +139,6 @@ void User::viewHome(const Date& currDate) const {
 					}
 				}
 			}
-		}
-	}
 	if (!anyPagePosts) cout << "No recent posts from liked pages.\n";
 }
 
