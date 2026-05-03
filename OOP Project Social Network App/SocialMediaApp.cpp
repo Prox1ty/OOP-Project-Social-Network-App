@@ -472,8 +472,15 @@ public:
 
 	void setSystemDate() {
 		int day, month, year;
-		cout << "DD MM YYYY: ";
-		cin >> day >> month >> year;
+		cout << "Enter system date (DD MM YYYY):  ";
+		while (true) {
+			if (cin >> day >> month >> year) {
+				break; // valid input
+			}
+			cout << "Invalid input. Try again (DD MM YYYY): ";
+			cin.clear();
+			cin.ignore(10000, '\n');
+		}
 		Date currDate(day, month, year);
 		SystemDate = currDate;
 		cout << "System Date" << SystemDate << endl;
