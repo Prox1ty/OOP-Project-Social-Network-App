@@ -542,19 +542,23 @@ public:
 		if (!found) cout << "Post not found" << endl;
 	}
 	
-	void shareMemory(const char* postId, const char* desc) {
+	void shareMemory(const char* postId) {
+		char desc[256];
 		bool found = false;
 		for (int i = 0; i < postCnt; i++) {
 			if (areEqual(postId, allPosts[i]->getId())) {
+				found = true;
 				try {
+					// moved description input here
+					cout << "Enter memory description: ";
+					cin.getline(desc, 256); 
 					Memory* addedMem = currUser->shareMemory(SystemDate, desc, allPosts[i]);
 					currUser->addMemory(addedMem);
-					found = true;
 				}
 				catch (const exception& ex) {
 					cout << "Unable to share memory: " << ex.what() << endl;
 				}
-				break;
+				return;
 			}
 		}
 

@@ -86,9 +86,7 @@ int main() {
 					cout << "Enter post Id: ";
 					cin >> postId;
 					cin.ignore(10000, '\n');
-					cout << "Enter memory description: ";
-					cin.getline(buffer, 256);
-					app.shareMemory(postId, buffer);
+					app.shareMemory(postId);
 					break;
 
 				case 7:
@@ -115,6 +113,7 @@ int main() {
 
 				case 11:
 					app.seeYourMemories();
+					break;
 
 				default:
 					cout << "Invalid action" << endl;
