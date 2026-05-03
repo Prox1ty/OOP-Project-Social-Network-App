@@ -9,6 +9,43 @@ class Date {
     int year;
 
     mutable char dateBuffer[20];
+
+    void setMonth(int m) {
+        if (m <= 0) m = abs(m);
+        if (m > 12) month = (m % 12 == 0) ? 12 : m % 12;
+        else if (m == 0) month = 1;
+        else month = m;
+    }
+
+    void setYear(int y) {
+        if (y < 2016) year = 2016;
+        else if (y > 2026) year = 2026;
+        else year = y;
+    }
+
+    void setDay(int d) {
+        int maxDay = 31;
+        if (month == 2) {
+            maxDay = (year % 4 == 0) ? 29 : 28;
+        }
+        else if (month == 4 || month == 6 || month == 9 || month == 11) {
+            maxDay = 30;
+        }
+
+        if (d <= 0) {
+            day = 1;
+        }
+        else if (d > maxDay) {
+            day = d % maxDay;
+            if (day == 0) day = 1;
+            setMonth(month + 1);
+        }
+        else {
+            day = d;
+        }
+    }
+
+
 public:
     Date() {
         day = 1;
@@ -18,36 +55,11 @@ public:
     }
 
     Date(int d, int m, int y) {
-        if (m > 12) {
-            month = (m % 12 == 0)? m: m % 12; // will reset to 1 if greater than 12
-        }
-        else if (m <= 0) {
-            m = abs(m);
-            month = (m % 12 == 0) ? m : m % 12;
-        }
-        else {
-            month = m;
-        }
-
-        if (y < 2016) {
-            year = 2016;
-        }
-        else if (y > 2026) {
-            year = 2026;
-        }
-        else {
-            year = y;
-        }
-
-        if (m == 2 && (y % 4 != 0) && d >= 28) {
-            day = (d % 28 == 0 ? d : d % 28);
-        }
-        else {
-            day = d;
-        }
-
         dateBuffer[0] = '\0';
-     }
+        setMonth(m);
+        setYear(y);
+        setDay(d);
+    }
 
     Date& operator=(const Date& other) {
         day = other.day;
