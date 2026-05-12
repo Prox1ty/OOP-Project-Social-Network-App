@@ -20,5 +20,5 @@ public:
 	virtual ~UniqueElement();
 
 	// getter
-	const char* getId() const;
+	virtual const char* getId() const;
 };
